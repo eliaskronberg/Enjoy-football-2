@@ -1,0 +1,20 @@
+﻿@model List<Match>
+
+<table>
+    <tr>
+        <th>Location</th>
+        <th>Open Slots</th>
+        <th>Owner</th>
+        <th>Time of match</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Location</td>
+            <td>@item.OpenSlots</td>
+            <td>@item.Owner</td>
+            <td>@item.TimeOfMatch</td>
+
+        </tr>
+    }
+</table>
