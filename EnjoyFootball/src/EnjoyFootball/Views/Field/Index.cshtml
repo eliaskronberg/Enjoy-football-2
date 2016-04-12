@@ -1,0 +1,42 @@
+﻿@model List<FieldVM>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Turf</th>
+            <th>Description</th>
+            <th>Condition</th>
+            <th>Coordinates</th>
+        </tr>
+        @foreach (var field in Model)
+        {
+            <tr>
+                <td>@field.Name</td>
+                <td>@field.Turf</td>
+                <td>@field.Description</td>
+                @if (field.Condition == 0)
+                {
+                    <td>Unrated</td>
+                }
+                else
+                {
+                    <td>@field.Condition</td>
+                }
+                @if (field.Coordinates == null)
+                {
+                    <td>Undefined</td>
+                }
+                else
+                {
+                <td>@field.Coordinates</td>
+                }
+            </tr>
+        }
+    </table>
+</body>
+</html>

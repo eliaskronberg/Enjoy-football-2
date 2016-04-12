@@ -1,0 +1,40 @@
+﻿@model CreateFieldVM
+
+@if (ViewData["FieldIsInvalid"] != null)
+{
+    <h3>Namnet finns redan i databasen</h3>
+}
+
+
+<form asp-controller="Field" asp-action="CreateField">
+    <br />
+    <label asp-for="Name"></label>
+    <input asp-for="Name" class="form-control">
+    <span asp-validation-for="Name"></span>
+    <br />
+    <label asp-for="Description"></label>
+    <input asp-for="Description" class="form-control">
+    <span asp-validation-for="Description"></span>
+    <br />
+    <label asp-for="Capacity"></label>
+    <input asp-for="Capacity" class="form-control">
+    <span asp-validation-for="Capacity"></span>
+    <br />
+    <label asp-for="Lighting"></label>
+    <input asp-for="Lighting" class="form-control">
+    <span asp-validation-for="Lighting"></span>
+    <br />
+    <label asp-for="Turf"></label>
+    <input asp-for="Turf" class="form-control">
+    <span asp-validation-for="Turf"></span>
+    <br />
+    <label asp-for="Coordinates"></label>
+    <input asp-for="Coordinates" class="form-control">
+    <span asp-validation-for="Coordinates"></span>
+    <br />
+
+    <div style="float:right">
+        <input id="submitAdmin" type="submit" class="btn btn-success" value="Logga in" />
+    </div>
+    <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
+</form>

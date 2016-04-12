@@ -1,0 +1,52 @@
+﻿@model CreateGameVM
+
+@if (ViewData["FieldIsInvalid"] != null)
+{
+    <h3>Namnet finns redan i databasen</h3>
+}
+
+<script>
+    $(document).ready(function () {
+        $post("Game/ListFieldName", function (result) {
+            for(var i = 0 ; i < result.length; i++)
+            {
+                var value = result[i];
+                $('#selectedField').append($('<option></option>')
+                    .attr("value", value)
+                    .text(value));
+            }
+        })
+
+    });
+
+</script>
+
+<form asp-controller="Game" asp-action="CreateGame">
+
+    <br />
+    <label asp-for="Description"></label>
+    <input asp-for="Description" class="form-control">
+    <span asp-validation-for="Description"></span>
+    <br />
+    <label asp-for="IsPublic"></label>
+    <input asp-for="IsPublic" class="form-control">
+    <span asp-validation-for="IsPublic"></span>
+    <br />
+    <label asp-for="Field"></label>
+    <select id="selectedField" asp-for="Field" class="form-control"></select>
+    <span asp-validation-for="Field"></span>
+    <br />
+    <label asp-for="MaxSlots"></label>
+    <input asp-for="MaxSlots" class="form-control">
+    <span asp-validation-for="MaxSlots"></span>
+    <br />
+    <label asp-for="StartTime"></label>
+    <input asp-for="StartTime" class="form-control">
+    <span asp-validation-for="StartTime"></span>
+    <br />
+
+    <div style="float:right">
+        <input id="submitAdmin" type="submit" class="btn btn-success" value="Logga in" />
+    </div>
+    <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
+</form>

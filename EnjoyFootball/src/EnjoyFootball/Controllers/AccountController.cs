@@ -104,7 +104,7 @@ namespace EnjoyFootball.Controllers
             //Kolla resultat på mailutskicket??
             //Metod som skickar ett lösenord till specificerad emailadress
 
-            return View(model);
+            return RedirectToAction(nameof(Login));
         }
     }
 }
