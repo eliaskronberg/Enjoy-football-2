@@ -1,0 +1,41 @@
+﻿
+
+@model CreateUserVM
+
+<head>
+
+    <title>Aw academy Login</title>
+
+</head>
+<body>
+    <div class="container text-center" style="margin:auto">
+        <br />
+        <br />
+     
+        <h1 style="color:#00AA3C">Create User</h1>
+        <div style="width:32%; margin:auto">
+            <form asp-controller="Account" asp-action="CreateUser">
+                <br />
+                <label asp-for="EMail"></label>
+                <input asp-for="EMail" class="form-control">
+                <span asp-validation-for="EMail"></span>
+                <br />
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control">
+                <span asp-validation-for="Password"></span>
+                <br />  
+                    <div style="float:right">
+                        <input id="submitAdmin" type="submit" class="btn btn-success" value="Create user" />
+                    </div>
+                
+                <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
+            </form>
+        </div>
+        <br /><br />
+        <br /><br />
+        <br /><br />
+        <br /><br />
+        <br />
+    </div>
+</body>
+

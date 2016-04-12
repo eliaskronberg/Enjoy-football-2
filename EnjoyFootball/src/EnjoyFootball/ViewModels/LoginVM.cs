@@ -16,7 +16,7 @@ namespace EnjoyFootball.ViewModels
         [Display(Name = "Lösenord")]
         [DataType(DataType.Password)]
         [Required(ErrorMessage = "Ange ditt lösenord.")]
-        [StringLength(20, MinimumLength = 6, ErrorMessage = "Lösenordet måste vara 6 till 20 tecken långt.")]
+        //[StringLength(20, MinimumLength = 6, ErrorMessage = "Lösenordet måste vara 6 till 20 tecken långt.")]
         public string Password { get; set; }
     }
 }

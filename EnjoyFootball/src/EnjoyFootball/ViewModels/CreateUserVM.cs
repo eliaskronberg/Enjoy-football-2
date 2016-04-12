@@ -14,7 +14,7 @@ namespace EnjoyFootball.ViewModels
         public string EMail { get; set; }
 
         [Required(ErrorMessage = "Skriv rätt för fan.")]
-        [Range(6,20,ErrorMessage ="Felfelfelfelfelfel")]
+        //[Range(6,20,ErrorMessage ="Felfelfelfelfelfel")]
         [Display(Name = "Password")]
         public string Password { get; set; }
 

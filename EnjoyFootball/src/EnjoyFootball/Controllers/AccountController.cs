@@ -28,6 +28,10 @@ namespace EnjoyFootball.Controllers
             this.context = context;
             this.userManager = userManager;
         }
+        public IActionResult Login()
+        {
+            return View();
+        }
 
         [AllowAnonymous]
         [HttpPost]
@@ -54,8 +58,8 @@ namespace EnjoyFootball.Controllers
 
         public IActionResult CreateUser()
         {
-            CreateUserVM newUser = new CreateUserVM();
-            return View(newUser);
+        //    CreateUserVM newUser = new CreateUserVM();
+            return View();
         }
         //Metoden är satt till async task för att metoden i sig är en async metod. Task säger att metoden är en asynkron operation.
         [HttpPost]

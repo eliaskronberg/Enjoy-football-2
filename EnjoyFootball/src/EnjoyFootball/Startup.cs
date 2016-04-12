@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Data.Entity;
 using EnjoyFootball.Models;
+using Microsoft.AspNet.Http;
 
 namespace EnjoyFootball
 {
@@ -39,28 +40,34 @@ namespace EnjoyFootball
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddMvc();
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddEntityFramework().AddSqlServer().AddDbContext<FootballContext>(o => o.UseSqlServer(connString));
-            services.AddIdentity<IdentityUser, IdentityRole>();
-            services.AddMvc();
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<FootballContext>().AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            app.UseStaticFiles();
+            app.UseDeveloperExceptionPage();
 
-            app.UseMvcWithDefaultRoute();
             app.UseIISPlatformHandler();
+
+            app.UseIdentity()
+                .UseCookieAuthentication(o =>
+                {
+                    o.AutomaticChallenge = true;
+                    o.LoginPath = new PathString("/account/fuckoff/");
+                });
 
             app.UseApplicationInsightsRequestTelemetry();
 
             app.UseApplicationInsightsExceptionTelemetry();
 
-            app.UseStaticFiles();
 
-            app.UseMvc();
+            app.UseMvcWithDefaultRoute();
+            //app.UseMvc();
         }
 
         // Entry point for the application.

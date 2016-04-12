@@ -13,7 +13,7 @@ namespace EnjoyFootball.Controllers
     {
 
         public IActionResult Index()
-        {
+       {
             List<Match> listOfMatches = new List<Match>();
 
             listOfMatches.Add(new Match { Id = 1, Owner = "Martin(alltid)", Location = "Vasaparken", OpenSlots = 10, TimeOfMatch = DateTime.Now });
