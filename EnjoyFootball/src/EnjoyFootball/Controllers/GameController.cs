@@ -57,9 +57,14 @@ namespace EnjoyFootball.Controllers
             }
         }
 
-        public void addplayer(Player newPlayer, GameDetails game)
+        public IActionResult addplayer(int gameDetalisId)
         {
+            Player newPlayer = new Player();
+            var game = dataManager.getMatchByID(gameDetalisId);
+            newPlayer.Nickname = User.Identity.Name;
             game.PlayerList.Add(newPlayer);
+
+            return Redirect("/game/index/" + gameDetalisId);
         }
     }
 }

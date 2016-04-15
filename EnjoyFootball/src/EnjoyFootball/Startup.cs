@@ -16,7 +16,7 @@ namespace EnjoyFootball
 {
     public class Startup
     {
-        string connString = @"Data Source=(localDb)\mssqllocalDb;Initial Catalog=EnjoyFootball;Integrated Security=True;Pooling=False";
+        string connString = @"Data Source=ACADEMY030;Initial Catalog=EnjoyFootball2;Integrated Security=True;Pooling=False";
         public Startup(IHostingEnvironment env)
         {
 

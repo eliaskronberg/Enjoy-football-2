@@ -108,12 +108,13 @@ namespace EnjoyFootball.Models
                 .Where(o => o.Id == id)
                 .Select(o => new GameDetails
                 {
+                    Id=o.Id,
                     Field = o.Location,
                     Owner = o.Owner,
                     OpenSlots = o.OpenSlots,
                     StartTime = o.TimeOfMatch
                 })
-                .SingleOrDefault();
+                .First();
 
             return game;
         }
