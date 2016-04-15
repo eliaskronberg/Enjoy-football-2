@@ -11,16 +11,17 @@ namespace EnjoyFootball.Controllers
 {
     public class HomeController : Controller
     {
+        FootballContext context;
+        DataManager dataManager;
+        public HomeController(FootballContext context)
+        {
+            this.context = context;
+            this.dataManager = new DataManager(context);
+        }
 
         public IActionResult Index()
-       {
-            List<Match> listOfMatches = new List<Match>();
-
-            listOfMatches.Add(new Match { Id = 1, Owner = "Martin(alltid)", Location = "Vasaparken", OpenSlots = 10, TimeOfMatch = DateTime.Now });
-            listOfMatches.Add(new Match { Id = 2, Owner = "Martin(alltid)", Location = "GrimstaIp", OpenSlots = 7, TimeOfMatch = DateTime.Now });
-            listOfMatches.Add(new Match { Id = 3, Owner = "Martin(alltid)", Location = "GrimstaBeach", OpenSlots = 1, TimeOfMatch = DateTime.Now });
-            listOfMatches.Add(new Match { Id = 4, Owner = "Martin(alltid)", Location = "Husby", OpenSlots = 3, TimeOfMatch = DateTime.Now });
-            return View(listOfMatches);
+       {    
+            return View(dataManager.GetAllGames());
             //return PartialView("IndexPartial", listOfMatches);
         }
         //// GET: api/values

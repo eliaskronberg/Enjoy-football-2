@@ -1,5 +1,20 @@
-﻿@*
-    LIST ALL GAMES EVVVVVVVEEEEER
-*@
-@{
-}
+﻿@model GameDetails
+
+<div>
+    <p>plan: @Model.Field</p>
+    <p>lediga platser: @Model.OpenSlots</p>
+    <p>tid: @Model.StartTime</p>
+    <p>aktiv: @Model.IsActive</p>
+    <p>Spelare: @foreach (var item in Model.PlayerList)
+    {
+        item.Nickname
+    }</p>
+</div>
+<input id="joinGame" type="button" value="Join Game" />
+<script>
+    $("#joinGame").click(function()
+    {
+        $.get("game/addplayer",{})
+
+    })
+</script>

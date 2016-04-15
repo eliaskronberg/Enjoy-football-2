@@ -10,7 +10,7 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td>@item.Location</td>
+            <td><a href="game/index/@item.Id/">@item.Location</a></td>
             <td>@item.OpenSlots</td>
             <td>@item.Owner</td>
             <td>@item.TimeOfMatch</td>

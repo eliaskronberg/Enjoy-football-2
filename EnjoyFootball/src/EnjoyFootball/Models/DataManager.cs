@@ -10,6 +10,8 @@ namespace EnjoyFootball.Models
     {
         FootballContext context;
 
+        static List<Match> listOfMatches = new List<Match>();
+
         public DataManager(FootballContext context)
         {
             this.context = context;
@@ -37,6 +39,7 @@ namespace EnjoyFootball.Models
             }
             return false;
         }
+
 
         public bool CreateGame(CreateGameVM createGameVm, string userId)
         {
@@ -89,6 +92,30 @@ namespace EnjoyFootball.Models
         {
             var user = context.Users.Where(o => o.UserName == Name).SingleOrDefault();
             return user.Id;
+        }
+        public List<Match> GetAllGames()
+        {
+            listOfMatches.Add(new Match { Id = 1, Owner = "Martin(alltid)", Location = "Vasaparken", OpenSlots = 10, TimeOfMatch = DateTime.Now });
+            listOfMatches.Add(new Match { Id = 2, Owner = "Martin(alltid)", Location = "GrimstaIp", OpenSlots = 7, TimeOfMatch = DateTime.Now });
+            listOfMatches.Add(new Match { Id = 3, Owner = "Martin(alltid)", Location = "GrimstaBeach", OpenSlots = 1, TimeOfMatch = DateTime.Now });
+            listOfMatches.Add(new Match { Id = 4, Owner = "Martin(alltid)", Location = "Husby", OpenSlots = 3, TimeOfMatch = DateTime.Now });
+
+            return listOfMatches;
+        }
+        public GameDetails getMatchByID(int id)
+        {
+            var game = listOfMatches
+                .Where(o => o.Id == id)
+                .Select(o => new GameDetails
+                {
+                    Field = o.Location,
+                    Owner = o.Owner,
+                    OpenSlots = o.OpenSlots,
+                    StartTime = o.TimeOfMatch
+                })
+                .SingleOrDefault();
+
+            return game;
         }
     }
 }

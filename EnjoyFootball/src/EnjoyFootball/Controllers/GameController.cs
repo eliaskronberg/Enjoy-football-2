@@ -25,9 +25,9 @@ namespace EnjoyFootball.Controllers
         }
 
         // GET: /<controller>/
-        public IActionResult Index()
+        public IActionResult Index(int id)
         {
-            return View();
+            return View(dataManager.getMatchByID(id));
         }
         public IActionResult CreateGame()
         {
@@ -55,6 +55,11 @@ namespace EnjoyFootball.Controllers
                 ViewData["CreateGame"] = "1";
                 return View(createGameVm);
             }
+        }
+
+        public void addplayer(Player newPlayer, GameDetails game)
+        {
+            game.PlayerList.Add(newPlayer);
         }
     }
 }
