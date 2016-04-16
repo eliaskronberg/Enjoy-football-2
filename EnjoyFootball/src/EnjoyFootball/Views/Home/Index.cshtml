@@ -1,4 +1,4 @@
-﻿@model List<Match>
+﻿@model List<Game>
 
 <table>
     <tr>
@@ -10,10 +10,10 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td><a href="game/index/@item.Id/">@item.Location</a></td>
-            <td>@item.OpenSlots</td>
+            <td><a onclick="location.href='@Url.Action("Index", "Game" , new {id = item.Id})'" href="#">@item.PitchName</a></td>
+            <td>@item.MaxSlots</td>
             <td>@item.Owner</td>
-            <td>@item.TimeOfMatch</td>
+            <td>@item.StartTime</td>
 
         </tr>
     }

@@ -15,7 +15,7 @@ namespace EnjoyFootball.Controllers
     public class GameController : Controller
     {
         FootballContext context;
-        DataManager dataManager;
+        public static DataManager dataManager;
         UserManager<IdentityUser> userManager;
         public GameController(FootballContext context, UserManager<IdentityUser> userManager)
         {
@@ -27,8 +27,11 @@ namespace EnjoyFootball.Controllers
         // GET: /<controller>/
         public IActionResult Index(int id)
         {
-            return View(dataManager.getMatchByID(id));
+            GameDetails tempGame = dataManager.getMatchByID(id);
+            return View(tempGame);
         }
+
+     
         public IActionResult CreateGame()
         {
             var newGame = new CreateGameVM();
@@ -57,14 +60,14 @@ namespace EnjoyFootball.Controllers
             }
         }
 
-        public IActionResult addplayer(int gameDetalisId)
+        public IActionResult addplayer(GameDetails gameDetails)
         {
             Player newPlayer = new Player();
-            var game = dataManager.getMatchByID(gameDetalisId);
             newPlayer.Nickname = User.Identity.Name;
-            game.PlayerList.Add(newPlayer);
+            gameDetails.PlayerList.Add(newPlayer);
+            dataManager.AddPlayerToGame(gameDetails.Id,newPlayer);
 
-            return Redirect("/game/index/" + gameDetalisId);
+            return RedirectToAction("Index",new { id = gameDetails.Id });
         }
     }
 }

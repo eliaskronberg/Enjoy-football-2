@@ -8,10 +8,7 @@ namespace EnjoyFootball.ViewModels
 {
     public class GameDetails
     {
-        public GameDetails()
-        {
-            PlayerList = new List<Player>();
-        }
+       
         public int Id { get; set; }
         public string Owner { get; set; }
         public string Description { get; set; }

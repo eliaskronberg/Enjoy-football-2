@@ -10,11 +10,15 @@ namespace EnjoyFootball.Models
     {
         FootballContext context;
 
-        static List<Match> listOfMatches = new List<Match>();
+        static List<Game> listOfMatches = new List<Game>();
 
         public DataManager(FootballContext context)
         {
             this.context = context;
+            listOfMatches.Add(new Game { Id = 1, Owner = "Martin(alltid)", PitchName = "Vasaparken", MaxSlots = 10, StartTime = DateTime.Now, PlayerList = new List<Player>() });
+            listOfMatches.Add(new Game { Id = 2, Owner = "Martin(alltid)", PitchName = "GrimstaIp", MaxSlots = 7, StartTime = DateTime.Now, PlayerList = new List<Player>() });
+            listOfMatches.Add(new Game { Id = 3, Owner = "Martin(alltid)", PitchName = "GrimstaBeach", MaxSlots = 1, StartTime = DateTime.Now, PlayerList = new List<Player>() });
+            listOfMatches.Add(new Game { Id = 4, Owner = "Martin(alltid)", PitchName = "Husby", MaxSlots = 3, StartTime = DateTime.Now, PlayerList = new List<Player>() });
         }
 
         // Only creates the field if there's no other field with the same name
@@ -66,6 +70,8 @@ namespace EnjoyFootball.Models
             return true;
 
         }
+
+
         public List<FieldVM> ListFields()
         {
 
@@ -93,13 +99,8 @@ namespace EnjoyFootball.Models
             var user = context.Users.Where(o => o.UserName == Name).SingleOrDefault();
             return user.Id;
         }
-        public List<Match> GetAllGames()
+        public List<Game> GetAllGames()
         {
-            listOfMatches.Add(new Match { Id = 1, Owner = "Martin(alltid)", Location = "Vasaparken", OpenSlots = 10, TimeOfMatch = DateTime.Now });
-            listOfMatches.Add(new Match { Id = 2, Owner = "Martin(alltid)", Location = "GrimstaIp", OpenSlots = 7, TimeOfMatch = DateTime.Now });
-            listOfMatches.Add(new Match { Id = 3, Owner = "Martin(alltid)", Location = "GrimstaBeach", OpenSlots = 1, TimeOfMatch = DateTime.Now });
-            listOfMatches.Add(new Match { Id = 4, Owner = "Martin(alltid)", Location = "Husby", OpenSlots = 3, TimeOfMatch = DateTime.Now });
-
             return listOfMatches;
         }
         public GameDetails getMatchByID(int id)
@@ -109,14 +110,22 @@ namespace EnjoyFootball.Models
                 .Select(o => new GameDetails
                 {
                     Id=o.Id,
-                    Field = o.Location,
+                    Field = o.PitchName,
                     Owner = o.Owner,
-                    OpenSlots = o.OpenSlots,
-                    StartTime = o.TimeOfMatch
+                    OpenSlots = o.MaxSlots,
+                    StartTime = o.StartTime,
+                    PlayerList=o.PlayerList
                 })
                 .First();
 
             return game;
+        }
+        public void AddPlayerToGame(int id, Player playerToAdd)
+        {
+            var game = GetAllGames()
+                .Where(o => o.Id == id)
+                .First();
+            game.PlayerList.Add(playerToAdd);
         }
     }
 }
