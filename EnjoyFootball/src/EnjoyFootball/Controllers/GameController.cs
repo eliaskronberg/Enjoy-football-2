@@ -49,10 +49,11 @@ namespace EnjoyFootball.Controllers
         public IActionResult CreateGame(CreateGameVM createGameVm)
         {
             var userId = dataManager.GetSingleUserId(User.Identity.Name);
-            var result = dataManager.CreateGame(createGameVm, userId);
-            if (result)
+            var gameId = dataManager.CreateGame(createGameVm, userId);
+            if (gameId > 0)
             {
-            return RedirectToAction("Lobby","Game");
+                dataManager.AddPlayerToGame(User.Identity.Name, gameId);
+                return RedirectToAction("Index", new { id = gameId });
             }
             else
             {
@@ -68,16 +69,25 @@ namespace EnjoyFootball.Controllers
             return RedirectToAction("Index",new { id = gameDetails.Id });
         }
 
-        public IActionResult RemovePlayer(GameDetails gameDetails)
+        public IActionResult RemovePlayer(string UserId, int GameId)
         {
             //var player= gameDetails.PlayerList
             //    .Where(o => o.Nickname == User.Identity.Name)
             //    .First();
             //gameDetails.PlayerList.Remove(player, User.Identity.Name);
 
-            dataManager.RemovePlayerFromGame(gameDetails.Id, User.Identity.Name);
+            dataManager.RemovePlayerFromGame(GameId, UserId);
+            //dataManager.RemovePlayerFromGame(utr.GameId, utr.UserId);
 
-            return RedirectToAction("Index", new { id = gameDetails.Id });
+            //return RedirectToAction("Index", new { id = utr.GameId });
+            return RedirectToAction("Index", new { id = GameId });
+        }
+        public IActionResult MakeOwner(string UserId, int GameId)
+        {
+
+            dataManager.AddPlayerToOwner(GameId, UserId);
+
+            return RedirectToAction("Index", new { id = GameId });
         }
     }
 }

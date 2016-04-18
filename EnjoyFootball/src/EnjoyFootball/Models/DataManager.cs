@@ -10,7 +10,6 @@ namespace EnjoyFootball.Models
 {
     public class DataManager
     {
-        FootballContext context;
 
         const string connectionString = "Data Source=ACADEMY030;Initial Catalog=EnjoyFootball2;Integrated Security=True;Pooling=False";
 
@@ -18,7 +17,7 @@ namespace EnjoyFootball.Models
         public static DataManager dataManager = new DataManager();
         List<Player> playerList = new List<Player>();
         List<Team> teamList = new List<Team>();
-        List<Field> fieldList= new List<Field>();
+        List<Field> fieldList = new List<Field>();
 
 
         public List<Player> GetAllPlayers()
@@ -39,13 +38,21 @@ namespace EnjoyFootball.Models
                 while (myreader.Read())
                 {
                     Player newPlayer = new Player();
-                    newPlayer.FirstName = (string)myreader["FirstName"];
-                    newPlayer.LastName = (string)myreader["LastName"];
-                    newPlayer.Nickname = (string)myreader["NickName"];
-                    newPlayer.Skill = (int)myreader["Skill"];
-                    newPlayer.Age = (int)myreader["Age"];
-                    newPlayer.City = (string)myreader["City"];
-                    newPlayer.Id = (string)myreader["ID"];
+                    //newPlayer.FirstName = (string)myreader["FirstName"];
+                    //newPlayer.LastName = (string)myreader["LastName"];
+                    //newPlayer.Nickname = (string)myreader["NickName"];
+                    //newPlayer.Skill = (int)myreader["Skill"];
+                    //newPlayer.Age = (int)myreader["Age"];
+                    //newPlayer.City = (string)myreader["City"];
+                    //newPlayer.Id = (string)myreader["ID"];
+
+                    newPlayer.FirstName = DBNull.Value.Equals(myreader["FirstName"]) ? "" : (string)myreader["FirstName"];
+                    newPlayer.LastName = DBNull.Value.Equals(myreader["LastName"]) ? "" : (string)myreader["LastName"];
+                    newPlayer.Nickname = DBNull.Value.Equals(myreader["NickName"]) ? "" : (string)myreader["NickName"];
+                    newPlayer.Skill = DBNull.Value.Equals(myreader["Skill"]) ? 0 : (int)myreader["Skill"];
+                    newPlayer.Age = DBNull.Value.Equals(myreader["Age"]) ? 0 : (int)myreader["Age"];
+                    newPlayer.City = DBNull.Value.Equals(myreader["City"]) ? "" : (string)myreader["City"];
+                    newPlayer.Id = DBNull.Value.Equals(myreader["Id"]) ? "" : (string)myreader["Id"];
 
                     playerList.Add(newPlayer);
                 }
@@ -65,28 +72,44 @@ namespace EnjoyFootball.Models
         // Only creates the field if there's no other field with the same name
         public bool CreateField(CreateFieldVM viewModel)
         {
-            var result = context.Fields.Where(x => x.Name == viewModel.Name).SingleOrDefault();
-            if (result == null)
-            {
-                context.Fields.Add(
-                    new Field
-                    {
-                        Capacity = viewModel.Capacity,
-                        Coordinates = viewModel.Coordinates,
-                        Description = viewModel.Description,
-                        Lighting = viewModel.Lighting,
-                        Name = viewModel.Name,
-                        Turf = viewModel.Turf
-                    });
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
 
-                context.SaveChanges();
-                return true;
+            try
+            {
+                myConnection.Open();
+                double dub = 0.0;
+                int votes = 0;
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "Create_Field";
+                cmd.Parameters.Add(new SqlParameter("@Capacity", viewModel.Capacity));
+                cmd.Parameters.Add(new SqlParameter("@Condition", dub));
+                cmd.Parameters.Add(new SqlParameter("@Coordinates", string.IsNullOrWhiteSpace(viewModel.Coordinates) ? "" : viewModel.Coordinates));
+                cmd.Parameters.Add(new SqlParameter("@Description", string.IsNullOrWhiteSpace(viewModel.Description) ? "" : viewModel.Description));
+                cmd.Parameters.Add(new SqlParameter("@Lighting", viewModel.Lighting));
+                cmd.Parameters.Add(new SqlParameter("@Name", viewModel.Name));
+                cmd.Parameters.Add(new SqlParameter("@Turf", viewModel.Turf));
+                cmd.Parameters.Add(new SqlParameter("@Votes", votes));
+
+
+                cmd.ExecuteNonQuery();
+
             }
-            return false;
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+            return true;
         }
 
         //Create a new Game
-        public bool CreateGame(CreateGameVM createGameVm, string userId)
+        public int CreateGame(CreateGameVM createGameVm, string userId)
         {
             var fieldId = ListFields().Where(o => o.Name == createGameVm.Field).Select(o => o.Id).SingleOrDefault();
 
@@ -122,7 +145,7 @@ namespace EnjoyFootball.Models
                 myConnection.Close();
             }
 
-            return true;
+            return GetAllGames().Last().Id;
 
         }
 
@@ -183,15 +206,15 @@ namespace EnjoyFootball.Models
 
         public string[] GetAllFieldNames()
         {
-            return ListFields().Select(o=>o.Name).ToArray();
+            return ListFields().Select(o => o.Name).ToArray();
         }
 
-        public string GetUserId(string Name)
-        {
+        //public string GetUserId(string Name)
+        //{
 
-            var user = context.Users.Where(o => o.UserName == Name).SingleOrDefault();
-            return user.Id;
-        }
+        //    var user = context.Users.Where(o => o.UserName == Name).SingleOrDefault();
+        //    return user.Id;
+        //}
 
         public List<Game> GetAllGames()
         {
@@ -269,7 +292,7 @@ namespace EnjoyFootball.Models
                 cmd.CommandText = "Add_Player_ToGame";
                 cmd.Parameters.Add(new SqlParameter("@playerId", playerId));
                 cmd.Parameters.Add(new SqlParameter("@gameId", id));
-                
+
 
                 cmd.ExecuteNonQuery();
 
@@ -285,10 +308,10 @@ namespace EnjoyFootball.Models
 
         }
 
-        public void RemovePlayerFromGame(int id, string playerNameToRemove)
+        public void RemovePlayerFromGame(int id, string playerIdToRemove)
         {
 
-            var player = GetAllPlayers().Where(o => o.Nickname == playerNameToRemove).SingleOrDefault();
+            var player = GetAllPlayers().Where(o => o.Id == playerIdToRemove).SingleOrDefault();
 
             SqlConnection myConnection = new SqlConnection();
             myConnection.ConnectionString = connectionString;
@@ -339,16 +362,16 @@ namespace EnjoyFootball.Models
                     if ((int)myreader["gameID"] == gameId)
                     {
                         Player newPlayer = new Player();
-                        
-                        newPlayer.FirstName =  DBNull.Value.Equals(myreader["FirstName"]) ? "": (string)myreader["FirstName"];
-                        newPlayer.LastName = DBNull.Value.Equals(myreader["LastName"]) ? "": (string)myreader["LastName"];
-                        newPlayer.Nickname = DBNull.Value.Equals(myreader["NickName"]) ? "": (string)myreader["NickName"];
-                        newPlayer.Skill = DBNull.Value.Equals(myreader["Skill"])?0: (int)myreader["Skill"];
-                        newPlayer.Age = DBNull.Value.Equals(myreader["Age"]) ? 0: (int)myreader["Age"];
+
+                        newPlayer.FirstName = DBNull.Value.Equals(myreader["FirstName"]) ? "" : (string)myreader["FirstName"];
+                        newPlayer.LastName = DBNull.Value.Equals(myreader["LastName"]) ? "" : (string)myreader["LastName"];
+                        newPlayer.Nickname = DBNull.Value.Equals(myreader["NickName"]) ? "" : (string)myreader["NickName"];
+                        newPlayer.Skill = DBNull.Value.Equals(myreader["Skill"]) ? 0 : (int)myreader["Skill"];
+                        newPlayer.Age = DBNull.Value.Equals(myreader["Age"]) ? 0 : (int)myreader["Age"];
                         newPlayer.City = DBNull.Value.Equals(myreader["City"]) ? "" : (string)myreader["City"];
                         newPlayer.Id = DBNull.Value.Equals(myreader["Id"]) ? "" : (string)myreader["Id"];
 
-                    AllPlayersInGame.Add(newPlayer);
+                        AllPlayersInGame.Add(newPlayer);
                     }
                 }
                 return AllPlayersInGame;
@@ -384,8 +407,8 @@ namespace EnjoyFootball.Models
 
                 while (myreader.Read())
                 {
-                   myId = (string)myreader["Id"];
-                 
+                    myId = (string)myreader["Id"];
+
                 }
                 return myId;
             }
@@ -431,5 +454,78 @@ namespace EnjoyFootball.Models
                 myConnection.Close();
             }
         }
+
+        public void AddPlayerToOwner(int gameId, string userId)
+        {
+            //var gameId = getGameByID(utr.GameId).Id;
+
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            string myId = "";
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@gameId", SqlDbType.Int);
+                cmd.Parameters["@gameId"].Value = gameId;
+                cmd.CommandText = "SELECT Owner FROM dbo.Games Where Id=@gameId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                    myId = (string)myreader["Owner"];
+
+                }
+
+                myId += ";" + userId;
+
+
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+
+            }
+            EditOwnerInjection(myId, gameId);
+            
+        }
+
+        public void EditOwnerInjection(string myId , int gameId)
+        {
+            SqlConnection myConnection1 = new SqlConnection();
+            myConnection1.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection1.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection1;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "EditOwner";
+                cmd.Parameters.Add(new SqlParameter("@paramOwner", myId));
+                cmd.Parameters.Add(new SqlParameter("@paramGameId", gameId));
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                myConnection1.Close();
+            }
+        }
     }
+
 }

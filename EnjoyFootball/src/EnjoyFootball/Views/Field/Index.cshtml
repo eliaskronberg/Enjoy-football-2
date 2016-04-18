@@ -27,7 +27,7 @@
                 {
                     <td>@field.Condition</td>
                 }
-                @if (field.Coordinates == null)
+                @if (field.Coordinates.Length < 2)
                 {
                     <td>Undefined</td>
                 }

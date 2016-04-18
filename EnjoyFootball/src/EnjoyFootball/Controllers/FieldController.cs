@@ -34,6 +34,7 @@ namespace EnjoyFootball.Controllers
                 tmp.Name = field.Name;
                 tmp.Turf = field.Turf;
                 tmp.Votes = field.Votes;
+                fieldVmList.Add(tmp);
             }
             return View(fieldVmList);
         }
