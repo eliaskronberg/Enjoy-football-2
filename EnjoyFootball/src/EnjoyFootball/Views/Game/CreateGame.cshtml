@@ -5,21 +5,7 @@
     <h3>Namnet finns redan i databasen</h3>
 }
 
-<script>
-    $(document).ready(function () {
-        $post("Game/ListFieldName", function (result) {
-            for(var i = 0 ; i < result.length; i++)
-            {
-                var value = result[i];
-                $('#selectedField').append($('<option></option>')
-                    .attr("value", value)
-                    .text(value));
-            }
-        })
 
-    });
-
-</script>
 
 <form asp-controller="Game" asp-action="CreateGame">
 
@@ -50,3 +36,20 @@
     </div>
     <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
 </form>
+
+<script>
+    $(document).ready(function () {
+        alert("Hey");
+        $post("Game/ListFieldName", function (result) {
+            for(var i = 0 ; i < result.length; i++)
+            {
+                var value = result[i];
+                $('#selectedField').append($('<option></option>')
+                    .attr("value", value)
+                    .text(value));
+            }
+        })
+
+    });
+
+</script>

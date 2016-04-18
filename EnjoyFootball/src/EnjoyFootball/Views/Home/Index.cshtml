@@ -10,7 +10,7 @@
     @foreach (var item in Model)
     {
         <tr>
-            <td><a onclick="location.href='@Url.Action("Index", "Game" , new {id = item.Id})'" href="#">@item.PitchName</a></td>
+            <td><a onclick="location.href='@Url.Action("Index", "Game" , new {id = item.Id})'" href="#">@item.Field</a></td>
             <td>@item.MaxSlots</td>
             <td>@item.Owner</td>
             <td>@item.StartTime</td>

@@ -9,8 +9,18 @@
     <p>
         Spelare: @foreach (var item in Model.PlayerList)
         {
-        <p>@item.Nickname</p>
-        }</p>
+            @if (User.Identity.Name == item.Nickname)
+            {
+            <p>@item.Nickname  <input id="btnLeave<game" type="button" value="Leave Game" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer","Game", Model)'" /></p>
+            }
+            else
+            {
+                <p>
+                    @item.Nickname
+                </p>
+            }
+        }
+        </p>
     </div>
-    <input id="joinGame" type="button" value="Join Game" onclick="location.href='@Url.Action("Addplayer", "Game" , Model)'" href="#"/>
+    <input id="joinGame" type="button" value="Join Game" onclick="location.href='@Url.Action("Addplayer", "Game" , Model)'" href="#" />
 

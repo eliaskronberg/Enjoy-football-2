@@ -15,19 +15,19 @@ namespace EnjoyFootball.Controllers
     public class GameController : Controller
     {
         FootballContext context;
-        public static DataManager dataManager;
+        DataManager dataManager;
         UserManager<IdentityUser> userManager;
         public GameController(FootballContext context, UserManager<IdentityUser> userManager)
         {
             this.context = context;
-            dataManager = new DataManager(context);
+            dataManager = new DataManager();
             this.userManager = userManager;
         }
 
         // GET: /<controller>/
         public IActionResult Index(int id)
         {
-            GameDetails tempGame = dataManager.getMatchByID(id);
+            GameDetails tempGame = dataManager.getGameByID(id);
             return View(tempGame);
         }
 
@@ -60,14 +60,23 @@ namespace EnjoyFootball.Controllers
             }
         }
 
-        public IActionResult addplayer(GameDetails gameDetails)
+        public IActionResult Addplayer(GameDetails gameDetails)
         {
-            Player newPlayer = new Player();
-            newPlayer.Nickname = User.Identity.Name;
-            gameDetails.PlayerList.Add(newPlayer);
-            dataManager.AddPlayerToGame(gameDetails.Id,newPlayer);
+            dataManager.AddPlayerToGame(User.Identity.Name, gameDetails.Id);
 
             return RedirectToAction("Index",new { id = gameDetails.Id });
+        }
+
+        public IActionResult RemovePlayer(GameDetails gameDetails)
+        {
+            //var player= gameDetails.PlayerList
+            //    .Where(o => o.Nickname == User.Identity.Name)
+            //    .First();
+            //gameDetails.PlayerList.Remove(player, User.Identity.Name);
+
+            dataManager.RemovePlayerFromGame(gameDetails.Id, User.Identity.Name);
+
+            return RedirectToAction("Index", new { id = gameDetails.Id });
         }
     }
 }

@@ -16,7 +16,7 @@ namespace EnjoyFootball.Controllers
         public HomeController(FootballContext context)
         {
             this.context = context;
-            this.dataManager = new DataManager(context);
+            this.dataManager = new DataManager();
         }
 
         public IActionResult Index()

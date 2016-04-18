@@ -17,7 +17,7 @@ namespace EnjoyFootball.Controllers
         public FieldController(FootballContext context)
         {
             this.context = context;
-            this.dataManager = new DataManager(context);
+            this.dataManager = new DataManager();
         }
         // GET: /<controller>/
         public IActionResult Index()
