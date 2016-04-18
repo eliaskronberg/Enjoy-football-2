@@ -28,6 +28,7 @@ namespace EnjoyFootball.Controllers
         public IActionResult Index(int id)
         {
             GameDetails tempGame = dataManager.getGameByID(id);
+            tempGame.CurrentPlayerId = dataManager.GetSingleUserId(User.Identity.Name);
             return View(tempGame);
         }
 
@@ -47,7 +48,7 @@ namespace EnjoyFootball.Controllers
         [HttpPost]
         public IActionResult CreateGame(CreateGameVM createGameVm)
         {
-            var userId = dataManager.GetUserId(User.Identity.Name);
+            var userId = dataManager.GetSingleUserId(User.Identity.Name);
             var result = dataManager.CreateGame(createGameVm, userId);
             if (result)
             {

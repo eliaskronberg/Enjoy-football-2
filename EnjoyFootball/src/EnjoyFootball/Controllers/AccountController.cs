@@ -20,6 +20,7 @@ namespace EnjoyFootball.Controllers
         FootballContext context;
         //IdentityDbContext identityContext;
         UserManager<IdentityUser> userManager;
+        DataManager datamanager;
 
         public AccountController(SignInManager<IdentityUser> signInManager,
             FootballContext context, /*IdentityDbContext idcontext,*/ UserManager<IdentityUser> userManager)
@@ -27,6 +28,7 @@ namespace EnjoyFootball.Controllers
             this.signInManager = signInManager;
             this.context = context;
             this.userManager = userManager;
+            datamanager = new DataManager();
         }
         public IActionResult Login()
         {
@@ -72,6 +74,7 @@ namespace EnjoyFootball.Controllers
             await context.Database.EnsureCreatedAsync();
             IdentityUser newUser = new IdentityUser(model.EMail);
             var result = await userManager.CreateAsync(newUser, model.Password);
+
             
             //Returnerar ett felmeddelande och vy-modellen ifall skapandet av användare misslyckats
             if (!result.Succeeded)
@@ -79,27 +82,12 @@ namespace EnjoyFootball.Controllers
                 ModelState.AddModelError("Email", result.Errors.First().Description);
                 return View(model);
             }
-            //var userId = await userManager.GetUserIdAsync(newUser);
-            //await userManager.AddToRoleAsync(newUser, "Default");
-            //var category = context.UserCategory.Where(x => x.CategoryName == model.CategoryName).SingleOrDefault();
+            var newPlayer = new Player();
+            newPlayer.Id = datamanager.GetSingleUserId(model.EMail);
+            newPlayer.Nickname = model.Nickname;
+            newPlayer.Age = model.Age;
 
-            //UserDetail userDetail = new UserDetail();
-            //userDetail.Id = userId;
-
-            //if (category != null)
-            //{
-            //    userDetail.SemesterId = category.Id;
-            //    context.UserDetails.Add(userDetail);
-            //    context.SaveChanges();
-            //}
-            //else
-            //{
-            //    UserCategory userCategory = new UserCategory();
-            //    userCategory.CategoryName = model.CategoryName;
-            //    context.UserCategory.Add(userCategory);
-            //    context.SaveChanges();
-            //    userDetail.SemesterId = userCategory.Id;
-            //}
+            datamanager.CreateNewPlayer(newPlayer);
             ViewData["UserCreated"] = "1";
             //Kolla resultat på mailutskicket??
             //Metod som skickar ett lösenord till specificerad emailadress

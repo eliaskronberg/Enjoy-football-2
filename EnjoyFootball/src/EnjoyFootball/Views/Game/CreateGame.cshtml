@@ -40,7 +40,7 @@
 <script>
     $(document).ready(function () {
         alert("Hey");
-        $post("Game/ListFieldName", function (result) {
+        $.post("/Game/ListFieldName", function (result) {
             for(var i = 0 ; i < result.length; i++)
             {
                 var value = result[i];

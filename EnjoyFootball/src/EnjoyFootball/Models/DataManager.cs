@@ -188,6 +188,7 @@ namespace EnjoyFootball.Models
 
         public string GetUserId(string Name)
         {
+
             var user = context.Users.Where(o => o.UserName == Name).SingleOrDefault();
             return user.Id;
         }
@@ -252,7 +253,8 @@ namespace EnjoyFootball.Models
         }
         public void AddPlayerToGame(string playerNameToAdd, int id)
         {
-            var player=GetAllPlayers().Where(o => o.Nickname == playerNameToAdd).SingleOrDefault();
+            //var player=GetAllPlayers().Where(o => o.Nickname == playerNameToAdd).SingleOrDefault();
+            var playerId = GetSingleUserId(playerNameToAdd);
 
             SqlConnection myConnection = new SqlConnection();
             myConnection.ConnectionString = connectionString;
@@ -265,7 +267,7 @@ namespace EnjoyFootball.Models
                 cmd.Connection = myConnection;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = "Add_Player_ToGame";
-                cmd.Parameters.Add(new SqlParameter("@playerId", player.Id));
+                cmd.Parameters.Add(new SqlParameter("@playerId", playerId));
                 cmd.Parameters.Add(new SqlParameter("@gameId", id));
                 
 
@@ -328,7 +330,7 @@ namespace EnjoyFootball.Models
 
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = myConnection;
-                cmd.CommandText = "SELECT dbo.Games.Id as gameID, dbo.Players.Age, dbo.Players.City, dbo.Players.FirstName, dbo.Players.LastName, dbo.Players.Nickname, dbo.Players.Skill, dbo.Games.Field FROM dbo.MidGamePlayer INNER JOIN dbo.Games ON dbo.MidGamePlayer.GameID = dbo.Games.Id INNER JOIN dbo.Players ON dbo.MidGamePlayer.PlayerID = dbo.Players.Id";
+                cmd.CommandText = "SELECT dbo.Games.Id as gameID, dbo.Players.Id, dbo.Players.Age, dbo.Players.City, dbo.Players.FirstName, dbo.Players.LastName, dbo.Players.Nickname, dbo.Players.Skill, dbo.Games.Field FROM dbo.MidGamePlayer INNER JOIN dbo.Games ON dbo.MidGamePlayer.GameID = dbo.Games.Id INNER JOIN dbo.Players ON dbo.MidGamePlayer.PlayerID = dbo.Players.Id";
                 SqlDataReader myreader = cmd.ExecuteReader();
 
                 List<Player> AllPlayersInGame = new List<Player>();
@@ -337,12 +339,14 @@ namespace EnjoyFootball.Models
                     if ((int)myreader["gameID"] == gameId)
                     {
                         Player newPlayer = new Player();
-                        newPlayer.FirstName = (string)myreader["FirstName"];
-                        newPlayer.LastName = (string)myreader["LastName"];
-                        newPlayer.Nickname = (string)myreader["NickName"];
-                        newPlayer.Skill = (int)myreader["Skill"];
-                        newPlayer.Age = (int)myreader["Age"];
-                        newPlayer.City = (string)myreader["City"];
+                        
+                        newPlayer.FirstName =  DBNull.Value.Equals(myreader["FirstName"]) ? "": (string)myreader["FirstName"];
+                        newPlayer.LastName = DBNull.Value.Equals(myreader["LastName"]) ? "": (string)myreader["LastName"];
+                        newPlayer.Nickname = DBNull.Value.Equals(myreader["NickName"]) ? "": (string)myreader["NickName"];
+                        newPlayer.Skill = DBNull.Value.Equals(myreader["Skill"])?0: (int)myreader["Skill"];
+                        newPlayer.Age = DBNull.Value.Equals(myreader["Age"]) ? 0: (int)myreader["Age"];
+                        newPlayer.City = DBNull.Value.Equals(myreader["City"]) ? "" : (string)myreader["City"];
+                        newPlayer.Id = DBNull.Value.Equals(myreader["Id"]) ? "" : (string)myreader["Id"];
 
                     AllPlayersInGame.Add(newPlayer);
                     }
@@ -354,6 +358,74 @@ namespace EnjoyFootball.Models
                 throw e;
             }
 
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public string GetSingleUserId(string userName)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                string myId = "";
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@UserName", SqlDbType.NVarChar);
+                cmd.Parameters["@UserName"].Value = userName;
+                cmd.CommandText = "SELECT Id FROM dbo.AspNetUsers Where Username=@UserName";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                   myId = (string)myreader["Id"];
+                 
+                }
+                return myId;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public void CreateNewPlayer(Player newPlayer)
+        {
+
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "Add_New_Player";
+                cmd.Parameters.Add(new SqlParameter("@Age", newPlayer.Age));
+                cmd.Parameters.Add(new SqlParameter("@Nickname", newPlayer.Nickname));
+                cmd.Parameters.Add(new SqlParameter("@Id", newPlayer.Id));
+
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
             finally
             {
                 myConnection.Close();

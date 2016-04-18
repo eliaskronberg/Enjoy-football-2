@@ -9,7 +9,7 @@
     <p>
         Spelare: @foreach (var item in Model.PlayerList)
         {
-            @if (User.Identity.Name == item.Nickname)
+            @if (Model.CurrentPlayerId == item.Id)
             {
             <p>@item.Nickname  <input id="btnLeave<game" type="button" value="Leave Game" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer","Game", Model)'" /></p>
             }

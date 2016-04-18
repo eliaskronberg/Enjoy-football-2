@@ -12,18 +12,30 @@ namespace EnjoyFootball.Controllers
 {
     public class FieldController : Controller
     {
-        FootballContext context;
         DataManager dataManager;
-        public FieldController(FootballContext context)
+        public FieldController()
         {
-            this.context = context;
             this.dataManager = new DataManager();
         }
         // GET: /<controller>/
         public IActionResult Index()
         {
             var list = dataManager.ListFields();
-            return View(list);
+            var fieldVmList = new List<FieldVM>();
+            foreach (var field in list)
+            {
+                FieldVM tmp = new FieldVM();
+                tmp.Capacity = field.Capacity;
+                tmp.Condition = field.Condition;
+                tmp.Coordinates = field.Coordinates;
+                tmp.Description = field.Description;
+                tmp.Lighting = field.Lighting;
+                tmp.Id = field.Id;
+                tmp.Name = field.Name;
+                tmp.Turf = field.Turf;
+                tmp.Votes = field.Votes;
+            }
+            return View(fieldVmList);
         }
 
         public IActionResult CreateField()

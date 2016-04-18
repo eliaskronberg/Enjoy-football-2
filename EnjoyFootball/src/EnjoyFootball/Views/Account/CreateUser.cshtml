@@ -1,6 +1,4 @@
-﻿
-
-@model CreateUserVM
+﻿@model CreateUserVM
 
 <head>
 
@@ -11,7 +9,7 @@
     <div class="container text-center" style="margin:auto">
         <br />
         <br />
-     
+
         <h1 style="color:#00AA3C">Create User</h1>
         <div style="width:32%; margin:auto">
             <form asp-controller="Account" asp-action="CreateUser">
@@ -23,11 +21,18 @@
                 <label asp-for="Password"></label>
                 <input asp-for="Password" class="form-control">
                 <span asp-validation-for="Password"></span>
-                <br />  
-                    <div style="float:right">
-                        <input id="submitAdmin" type="submit" class="btn btn-success" value="Create user" />
-                    </div>
-                
+                <br />
+                <label asp-for="Nickname"></label>
+                <input asp-for="Nickname" class="form-control">
+                <span asp-validation-for="Nickname"></span>
+                <br />  <label asp-for="Age"></label>
+                <input asp-for="Age" class="form-control">
+                <span asp-validation-for="Age"></span>
+                <br />
+                <div style="float:right">
+                    <input id="submitAdmin" type="submit" class="btn btn-success" value="Create user" />
+                </div>
+
                 <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
             </form>
         </div>

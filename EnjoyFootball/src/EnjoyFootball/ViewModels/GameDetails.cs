@@ -8,7 +8,7 @@ namespace EnjoyFootball.ViewModels
 {
     public class GameDetails
     {
-       
+        public string CurrentPlayerId { get; set; }
         public int Id { get; set; }
         public string Owner { get; set; }
         public string Description { get; set; }
