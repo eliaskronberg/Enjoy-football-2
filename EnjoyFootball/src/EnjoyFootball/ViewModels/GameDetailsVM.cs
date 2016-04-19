@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EnjoyFootball.ViewModels
 {
-    public class GameDetails
+    public class GameDetailsVM
     {
         public string CurrentPlayerId { get; set; }
         public int Id { get; set; }

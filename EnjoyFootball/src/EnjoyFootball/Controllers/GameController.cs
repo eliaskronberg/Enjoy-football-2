@@ -27,7 +27,7 @@ namespace EnjoyFootball.Controllers
         // GET: /<controller>/
         public IActionResult Index(int id)
         {
-            GameDetails tempGame = dataManager.getGameByID(id);
+            GameDetailsVM tempGame = dataManager.getGameByID(id);
             tempGame.CurrentPlayerId = dataManager.GetSingleUserId(User.Identity.Name);
             return View(tempGame);
         }
@@ -62,7 +62,7 @@ namespace EnjoyFootball.Controllers
             }
         }
 
-        public IActionResult Addplayer(GameDetails gameDetails)
+        public IActionResult Addplayer(GameDetailsVM gameDetails)
         {
             dataManager.AddPlayerToGame(User.Identity.Name, gameDetails.Id);
 
@@ -88,6 +88,31 @@ namespace EnjoyFootball.Controllers
             dataManager.AddPlayerToOwner(GameId, UserId);
 
             return RedirectToAction("Index", new { id = GameId });
+        }
+
+        public IActionResult MakePeasant(string UserId, int GameId)
+        {
+
+            dataManager.RemoveOwner(GameId, UserId);
+
+            return RedirectToAction("Index", new { id = GameId });
+        }
+
+        public IActionResult UpdateGame (GameDetailsVM gdv)
+        {
+            dataManager.UpdateGame(gdv);
+            return RedirectToAction("Index", new { id = gdv.Id });
+        }
+
+        public IActionResult ChangePublic(int gameId, bool boolToEdit)
+        {
+            dataManager.TogglePublic(gameId, boolToEdit);
+            return RedirectToAction("Index", new { id = gameId });
+        }
+        public IActionResult ChangeActive(int gameId, bool boolToEdit)
+        {
+            dataManager.ToggleActive(gameId, boolToEdit);
+            return RedirectToAction("Index", new { id = gameId });
         }
     }
 }

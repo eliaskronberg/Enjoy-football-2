@@ -1,27 +1,25 @@
-﻿@model GameDetails
+﻿@model GameDetailsVM
 
 <div>
     @{ bool isOwner = false;}
     @foreach (var item in Model.Owner.Split(';'))
     {
         @if (Model.CurrentPlayerId == item)
-        { isOwner = true;
+        {
+            isOwner = true;
         }
     }
     @if (isOwner)
-    
+
     {
-        <form asp-controller="Game" asp-action="EditGame">
+        <form asp-controller="Game" asp-action="UpdateGame">
 
             <br />
             <label asp-for="Description"></label>
             <input asp-for="Description" class="form-control" value="@Model.Description">
             <span asp-validation-for="Description"></span>
             <br />
-            <label asp-for="IsPublic"></label>
-            <input asp-for="IsPublic" class="form-control" value="@Model.IsPublic">
-            <span asp-validation-for="IsPublic"></span>
-            <br />
+           
             <label asp-for="Field"></label>
             <select id="selectedField" asp-for="Field" class="form-control" selected="@Model.Field"></select>
             <span asp-validation-for="Field"></span>
@@ -34,50 +32,74 @@
             <input asp-for="StartTime" class="form-control" value="@Model.StartTime">
             <span asp-validation-for="StartTime"></span>
             <br />
-            <label asp-for="IsActive"></label>
-            <input asp-for="IsActive" class="form-control" value="@Model.IsActive">
-            <span asp-validation-for="IsActive"></span>
-            <br />
-
-                <input id="submitAdmin" type="submit" class="btn btn-success" value="Save Changes" />
+            <input asp-for="Id" type="hidden" value="@Model.Id" />
+            <input id="submitAdmin" type="submit" class="btn btn-success" value="Save Changes" @*onclick="location.href='@Url.Action(" UpdateGame","Game", Model)'"*@ />
             <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
         </form>
+        <label asp-for="IsActive"></label>
+        GameBoolToEditVM bte = new GameBoolToEditVM(Model.Id);
 
+            @if (Model.IsActive)
+            {
+                bte.BoolToEdit = false;
+                <input type="checkbox" checked="checked" onchange="location.href='@Url.Action("ChangeActive", "Game", bte)'">
+            }
+            else
+            {
+                bte.BoolToEdit = true;
+                <input type="checkbox" onchange="location.href='@Url.Action("ChangeActive", "Game", bte)'">
+            }
+            <span asp-validation-for="IsActive"></span>
+            <br/>
+            <label asp-for="IsPublic"></label>
+            @if (Model.IsPublic)
+            {
 
-        @*<p>plan: @Model.Field</p>
-        <p>lediga platser: @Model.OpenSlots</p>
-        <p>tid: @Model.StartTime</p>
-        <p>aktiv: @Model.IsActive</p>
-        <p>@Model.Id</p>
-        <input type="button" value="Edit gameinfo" onclick="location.href='@Url.Action("EditGame", "Game", Model.Id)'" />*@
-        <p>Spelare: </p>
-        @foreach (var item in Model.PlayerList)
-        {
-            UserToRemoveVM utr = new UserToRemoveVM(item.Id, Model.Id);
+                bte.BoolToEdit = false;
+                <input type="checkbox" checked="checked" onchange="location.href='@Url.Action("ChangePublic", "Game", bte)'">
+            }
+            else
+            {
+                bte.BoolToEdit = true;
+                <input type="checkbox" onchange="location.href='@Url.Action("ChangePublic", "Game", bte)'">
+            }
+            <span asp-validation-for="IsPublic"></span>
+            <br />
 
-            <p>@item.Nickname  <input id="btnKickFrom<game" type="button" value="Kick from Game" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer","Game", utr)'" /></p>
+            @*<p>plan: @Model.Field</p>
+                <p>lediga platser: @Model.OpenSlots</p>
+                <p>tid: @Model.StartTime</p>
+                <p>aktiv: @Model.IsActive</p>
+                <p>@Model.Id</p>
+                <input type="button" value="Edit gameinfo" onclick="location.href='@Url.Action("EditGame", "Game", Model.Id)'" />*@
+            <p>Spelare: </p>
+            @foreach (var item in Model.PlayerList)
+            {
+                UserToRemoveVM utr = new UserToRemoveVM(item.Id, Model.Id);
 
-            bool isOwnerCheck = false;
-            @foreach (var user in Model.Owner.Split(';'))
+                <p>@item.Nickname  <input id="btnKickFrom<game" type="button" value="Kick from Game" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer","Game", utr)'" /></p>
+
+                bool isOwnerCheck = false;
+                @foreach (var user in Model.Owner.Split(';'))
                     {
-                @if (item.Id == user)
-                        {
-                    isOwnerCheck = true;
-                }
+                    @if (item.Id == user)
+                    {
+                        isOwnerCheck = true;
                     }
+                }
                 if (isOwnerCheck)
                 {
-            <input id="btnMakeOwner<game" type="checkbox" checked="checked" onchange="location.href='@Url.Action("MakePeasant", "Game", utr)'" />
+                    <input id="btnMakeOwner<game" type="checkbox" checked="checked" onchange="location.href='@Url.Action("MakePeasant", "Game", utr)'" />
                 }
                 else {
-            <input id="btnMakeOwner<game" type="checkbox" onchange="location.href='@Url.Action("MakeOwner", "Game", utr)'" />
-                        }
-
-                    }
+                    <input id="btnMakeOwner<game" type="checkbox" onchange="location.href='@Url.Action("MakeOwner", "Game", utr)'" />
                 }
-    else
-    {
-        <p>plan: @Model.Field</p>
+
+            }
+            }
+            else
+            {
+                <p>plan: @Model.Field</p>
                 <p>lediga platser: @Model.OpenSlots</p>
                 <p>tid: @Model.StartTime</p>
                 <p>aktiv: @Model.IsActive</p>
@@ -97,8 +119,20 @@
                         </p>
                     }
                 }
+            }
+    @{ bool alreadyInGame = false;}
+    @foreach (var item in Model.PlayerList)
+    {
+        if (Model.CurrentPlayerId == item.Id)
+        {
+            alreadyInGame = true;
+
+        }
     }
-    <input id="joinGame" type="button" value="Join Game" onclick="location.href='@Url.Action("Addplayer", "Game" , Model)'" href="#" />
+    @if (!alreadyInGame)
+    {
+        <input id="joinGame" type="button" value="Join Game" onclick="location.href='@Url.Action("Addplayer", "Game", Model)'" href="#" />
+    }
 </div>
 
 
@@ -114,6 +148,5 @@
         })
 
     });
-
 </script>
 

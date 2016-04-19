@@ -108,6 +108,65 @@ namespace EnjoyFootball.Models
             return true;
         }
 
+        internal void ToggleActive(int gameId, bool isActive)
+        {
+            var game = getGameByID(gameId);
+
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "EditActive";
+                cmd.Parameters.Add(new SqlParameter("@paramIsActive", isActive));
+                cmd.Parameters.Add(new SqlParameter("@paramGameId", gameId));
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        internal void TogglePublic(int gameId, bool isPublic)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "EditPublic";
+                cmd.Parameters.Add(new SqlParameter("@paramIsPublic", isPublic));
+                cmd.Parameters.Add(new SqlParameter("@paramGameId", gameId));
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
         //Create a new Game
         public int CreateGame(CreateGameVM createGameVm, string userId)
         {
@@ -149,10 +208,44 @@ namespace EnjoyFootball.Models
 
         }
 
-        //public List<Match> ListGameOverviews()
-        //{
+        public void UpdateGame(GameDetailsVM gameToChange)
+        {
+            var fieldId = ListFields().Where(o => o.Name == gameToChange.Field).Select(o => o.Id).SingleOrDefault();
 
-        //}
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "Update_Game";
+                cmd.Parameters.Add(new SqlParameter("@Description", string.IsNullOrWhiteSpace(gameToChange.Description) ? "" : gameToChange.Description));
+                cmd.Parameters.Add(new SqlParameter("@Field", fieldId));
+
+                cmd.Parameters.Add(new SqlParameter("@MaxSlots", gameToChange.OpenSlots > -1 ? gameToChange.OpenSlots : 0));
+                //cmd.Parameters.Add(new SqlParameter("@Owner", gameToChange.Owner));
+                cmd.Parameters.Add(new SqlParameter("@StartTime", gameToChange.StartTime));
+                cmd.Parameters.Add(new SqlParameter("@gameId", gameToChange.Id));
+
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+
+        }
+
 
         public List<Field> ListFields()
         {
@@ -209,12 +302,6 @@ namespace EnjoyFootball.Models
             return ListFields().Select(o => o.Name).ToArray();
         }
 
-        //public string GetUserId(string Name)
-        //{
-
-        //    var user = context.Users.Where(o => o.UserName == Name).SingleOrDefault();
-        //    return user.Id;
-        //}
 
         public List<Game> GetAllGames()
         {
@@ -257,13 +344,16 @@ namespace EnjoyFootball.Models
                 myConnection.Close();
             }
         }
-        public GameDetails getGameByID(int id)
+        public GameDetailsVM getGameByID(int id)
         {
             var game = GetAllGames()
                 .Where(o => o.Id == id)
-                .Select(o => new GameDetails
+                .Select(o => new GameDetailsVM
                 {
+                    Description = o.Description,
                     Id = o.Id,
+                    IsActive = o.IsActive,
+                    IsPublic = o.IsPublic,
                     Field = GetFieldById(o.Field).Name,
                     Owner = o.Owner,
                     OpenSlots = o.MaxSlots,
@@ -496,10 +586,10 @@ namespace EnjoyFootball.Models
 
             }
             EditOwnerInjection(myId, gameId);
-            
+
         }
 
-        public void EditOwnerInjection(string myId , int gameId)
+        public void EditOwnerInjection(string myId, int gameId)
         {
             SqlConnection myConnection1 = new SqlConnection();
             myConnection1.ConnectionString = connectionString;
@@ -526,6 +616,54 @@ namespace EnjoyFootball.Models
                 myConnection1.Close();
             }
         }
+
+        public void RemoveOwner(int gameId, string userId)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            string myId = "";
+            string tempOwners = "";
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@gameId", SqlDbType.Int);
+                cmd.Parameters["@gameId"].Value = gameId;
+                cmd.CommandText = "SELECT Owner FROM dbo.Games Where Id=@gameId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                    myId = (string)myreader["Owner"];
+
+                }
+                foreach (var item in myId.Split(';'))
+                {
+                    if (item != userId)
+                        tempOwners += ";" + item;
+                }
+
+
+
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+
+            }
+            EditOwnerInjection(tempOwners, gameId);
+        }
+
+
     }
 
 }
