@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Mvc;
+using EnjoyFootball.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+
+// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace EnjoyFootball.Controllers
+{
+    public class PlayerController : Controller
+    {
+        DataManager dataManager;
+        UserManager<IdentityUser> usrmanager;
+        public PlayerController(UserManager<IdentityUser> usr)
+        {
+            usrmanager = usr;
+            dataManager = new DataManager();
+        }
+        // GET: /<controller>/
+        [HttpGet("Index/{id}")]
+
+        public Player Index(string Id = "")
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                return new Player();
+            }
+            var playerToShow = dataManager.GetPlayerInfo(Id);
+            return playerToShow;
+        }
+        [HttpGet("GetPlayerIdByUsername/{userName}")]
+        public string GetPlayerIdByUsername(string userName)
+        {
+            var playerId = dataManager.GetSingleUserId(userName);
+            return playerId;
+        }
+
+    }
+}

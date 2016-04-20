@@ -65,29 +65,24 @@ namespace EnjoyFootball.Controllers
         }
         //Metoden är satt till async task för att metoden i sig är en async metod. Task säger att metoden är en asynkron operation.
         [HttpPost]
-        public async Task<IActionResult> CreateUser(CreateUserVM model)
+        public IActionResult CreateUser(CreateUserVM model)
         {
             //Returnerar vy-modellen om något modellvärde är felaktigt
             if (!ModelState.IsValid)
                 return View(model);
 
-            await context.Database.EnsureCreatedAsync();
-            IdentityUser newUser = new IdentityUser(model.EMail);
-            var result = await userManager.CreateAsync(newUser, model.Password);
-
-            
+            // Hanteras i api:t
+            //await context.Database.EnsureCreatedAsync();
+            //IdentityUser newUser = new IdentityUser(model.EMail);
+            //var result = await userManager.CreateAsync(newUser, model.Password);
+            User user = new User();
+            user.Email = model.EMail;
+            user.NickName = model.Nickname;
+            user.Password = model.Password;
+            user.Age = model.Age;
+            datamanager.CreateNewPlayer(user);
             //Returnerar ett felmeddelande och vy-modellen ifall skapandet av användare misslyckats
-            if (!result.Succeeded)
-            {
-                ModelState.AddModelError("Email", result.Errors.First().Description);
-                return View(model);
-            }
-            var newPlayer = new Player();
-            newPlayer.Id = datamanager.GetSingleUserId(model.EMail);
-            newPlayer.Nickname = model.Nickname;
-            newPlayer.Age = model.Age;
-
-            datamanager.CreateNewPlayer(newPlayer);
+            
             ViewData["UserCreated"] = "1";
             //Kolla resultat på mailutskicket??
             //Metod som skickar ett lösenord till specificerad emailadress

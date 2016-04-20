@@ -110,12 +110,12 @@
                     @if (Model.CurrentPlayerId == item.Id)
                     {
                         UserToRemoveVM utr = new UserToRemoveVM(item.Id, Model.Id);
-                        <p>@item.Nickname  <input id="btnLeave<game" type="button" value="Leave Game" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer","Game", utr)'" /></p>
+                        <p> <a href="/player/index/@item.Id">@item.Nickname</a>  <input id="btnLeave<game" type="button" value="Leave Game" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer","Game", utr)'" /></p>
                     }
                     else
                     {
                         <p>
-                            @item.Nickname
+                            <a href="/player/index/@item.Id">@item.Nickname</a>
                         </p>
                     }
                 }

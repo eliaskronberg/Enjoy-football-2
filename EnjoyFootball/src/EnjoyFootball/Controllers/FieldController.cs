@@ -45,9 +45,9 @@ namespace EnjoyFootball.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateField(CreateFieldVM viewModel)
+        public async Task<IActionResult> CreateField(CreateFieldVM viewModel)
         {
-            var result = dataManager.CreateField(viewModel);
+            var result = await dataManager.CreateField(viewModel);
             if (result)
                 return RedirectToAction(nameof(Index));
             else

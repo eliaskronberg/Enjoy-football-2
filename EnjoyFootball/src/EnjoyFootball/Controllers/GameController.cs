@@ -25,10 +25,10 @@ namespace EnjoyFootball.Controllers
         }
 
         // GET: /<controller>/
-        public IActionResult Index(int id)
+        public async Task<IActionResult> Index(int id)
         {
-            GameDetailsVM tempGame = dataManager.getGameByID(id);
-            tempGame.CurrentPlayerId = dataManager.GetSingleUserId(User.Identity.Name);
+            GameDetailsVM tempGame = await dataManager.getGameByID(id);
+            tempGame.CurrentPlayerId = await dataManager.GetSingleUserId(User.Identity.Name);
             return View(tempGame);
         }
 
@@ -46,9 +46,9 @@ namespace EnjoyFootball.Controllers
             return Json(model);
         }
         [HttpPost]
-        public IActionResult CreateGame(CreateGameVM createGameVm)
+        public async Task<IActionResult> CreateGame(CreateGameVM createGameVm)
         {
-            var userId = dataManager.GetSingleUserId(User.Identity.Name);
+            var userId = await dataManager.GetSingleUserId(User.Identity.Name);
             var gameId = dataManager.CreateGame(createGameVm, userId);
             if (gameId > 0)
             {

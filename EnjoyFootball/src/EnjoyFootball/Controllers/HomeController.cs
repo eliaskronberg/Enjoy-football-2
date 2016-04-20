@@ -19,9 +19,10 @@ namespace EnjoyFootball.Controllers
             this.dataManager = new DataManager();
         }
 
-        public IActionResult Index()
-       {    
-            return View(dataManager.GetAllGames());
+        public async Task<IActionResult> Index()
+       {
+            var gamelist = await dataManager.GetAllGames();
+            return View(gamelist);
             //return PartialView("IndexPartial", listOfMatches);
         }
         //// GET: api/values

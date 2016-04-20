@@ -1,0 +1,23 @@
+﻿@model PlayerInfoVM
+
+@if (Model.currentUser)
+{
+    <form action="Player" method="post">
+        <p>@Model.player.Id</p>
+        <p>@Model.player.Nickname</p>
+        <p>@Model.player.LastName</p>
+        <p>@Model.player.FirstName</p>
+        <p>@Model.player.City</p>
+        <p>@Model.player.Age</p>
+        <label>Det här är din användare</label>
+    </form>
+}
+else
+{
+    <p>@Model.player.Id</p>
+    <p>@Model.player.Nickname</p>
+    <p>@Model.player.LastName</p>
+    <p>@Model.player.FirstName</p>
+    <p>@Model.player.City</p>
+    <p>@Model.player.Age</p>
+}
