@@ -42,11 +42,29 @@ namespace EnjoyFootball.Models
 
         }
 
+        public async Task<string> GetCurrentUser()
+        {
+            var Json = await getWebApi("account/GetCurrentUser");
+            var result = JsonConvert.DeserializeObject<string>(Json);
+            return result;
+        }
+
         // Only creates the field if there's no other field with the same name
         public async Task<bool> CreateField(CreateFieldVM viewModel)
         {
             var Json = await getWebApi("Field/createField");
             var result = JsonConvert.DeserializeObject<bool>(Json);
+            return result;
+        }
+
+        internal async Task<SignInResult> signInUser(LoginVM loginvm)
+        {
+            Login user = new Login();
+            user.Email = loginvm.EMail;
+            user.Password = loginvm.Password;
+            var userSer = JsonConvert.SerializeObject(user);
+            var Json = await getWebApi($"account/login/{userSer}");
+            var result = JsonConvert.DeserializeObject<SignInResult>(Json);
             return result;
         }
 
@@ -131,7 +149,7 @@ namespace EnjoyFootball.Models
 
         public async Task<string> GetSingleUserId(string userName)
         {
-            var result = await getWebApi($"player/getPlayerIdByUsername/{userName}");
+            var result = await getWebApi($"Player/GetPlayerIdByUsername/{userName}");
             return result;
         }
 

@@ -15,8 +15,10 @@ namespace EnjoyFootball.Controllers
     public class GameController : Controller
     {
         DataManager dataManager;
-        public GameController()
+        SignInManager<IdentityUser> signInManager;
+        public GameController(SignInManager<IdentityUser> signInManager)
         {
+            this.signInManager = signInManager;
             dataManager = new DataManager();
         }
 

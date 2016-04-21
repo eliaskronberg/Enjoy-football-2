@@ -12,31 +12,40 @@ using EnjoyFootball.Models;
 
 namespace EnjoyFootball.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class AccountController : Controller
     {
         SignInManager<IdentityUser> signInManager;
         DataManager datamanager;
-        FootballContext context;
         UserManager<IdentityUser> userManager;
-        public AccountController(SignInManager<IdentityUser> signInManager,UserManager<IdentityUser> userManager, FootballContext context)
+        IdentityDbContext context;
+        public AccountController(SignInManager<IdentityUser> signInManager,UserManager<IdentityUser> userManager, IdentityDbContext context)
         {
+            this.context = context;
             this.signInManager = signInManager;
             datamanager = new DataManager();
-            this.context = context;
             this.userManager = userManager;
         }
         
-        [HttpPost]
-        public async Task<bool> Login(string userName, string password)
+        [HttpGet("Login/{user}")]
+        public async Task<SignInResult> Login(string email,string password)
         {
-            var result = await signInManager.PasswordSignInAsync(userName, password, false, false);
+            //"{\"Id\":null,\"Email\":\"markus_vall@hotmail.com\",\"Password\":\"4Ftonbladet!\",\"NickName\":null,\"Age\":0}"
+            var Email =email;
+            //var Password = password;
+            var fan ="markus_vall@hotmail.com";
+            var helevet = "4Ftonbladet!";
+
+            //var result = await signInManager.PasswordSignInAsync(Email, Password, false, false);
+            var result = await signInManager.PasswordSignInAsync(fan, helevet, false, false);
             //return RedirectToAction(nameof(HomeController.Index);
-            if (!result.Succeeded)
-            {
-                return false;
-            }
-            return true;
+            //if (!result.Succeeded)
+            //{
+            //    return false;
+            //}
+            //return true;
+
+            return result;
         }
 
 
@@ -66,6 +75,13 @@ namespace EnjoyFootball.Controllers
             //Metod som skickar ett lösenord till specificerad emailadress
 
             return true;
+        }
+        [HttpGet("GetCurrentUser")]
+        public string GetCurrentUser()
+        {
+            //var user = "markus_vall@hotmail.com";
+            var result = datamanager.GetSingleUserId(User.Identity.Name);
+            return result;
         }
     }
 }

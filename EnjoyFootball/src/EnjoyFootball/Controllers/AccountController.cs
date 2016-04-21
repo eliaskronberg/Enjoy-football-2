@@ -13,6 +13,7 @@ using EnjoyFootball.ViewModels;
 
 namespace EnjoyFootball.Controllers
 {
+    [Authorize]
     public class AccountController : Controller
     {
         SignInManager<IdentityUser> signInManager;
@@ -30,6 +31,7 @@ namespace EnjoyFootball.Controllers
             this.userManager = userManager;
             datamanager = new DataManager();
         }
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
@@ -43,8 +45,14 @@ namespace EnjoyFootball.Controllers
             {
                 return View(loginvm);
             }
+
+            var result = await datamanager.signInUser(loginvm);
             // Inbyggd metod för att sköta dekrypteringar och säkerhet, de sista två är isPersistent (loginfail !=> rensa inloggningsuppgifter) och lockOutOnFailure
-            var result = await signInManager.PasswordSignInAsync(loginvm.EMail, loginvm.Password, false, false);
+            
+            
+            //var result = await signInManager.PasswordSignInAsync(loginvm.EMail, loginvm.Password, false, false);
+            
+            
             //return RedirectToAction(nameof(HomeController.Index);
             if (!result.Succeeded)
             {

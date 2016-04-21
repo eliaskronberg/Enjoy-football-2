@@ -58,7 +58,7 @@ namespace EnjoyFootball
                 .UseCookieAuthentication(o =>
                 {
                     o.AutomaticChallenge = true;
-                    o.LoginPath = new PathString("/account/fuckoff/");
+                    o.LoginPath = new PathString("/account/login/");
                 });
 
             app.UseApplicationInsightsRequestTelemetry();

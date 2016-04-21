@@ -12,11 +12,9 @@ namespace EnjoyFootball.Controllers
     [Route("api/[controller]")]
     public class HomeController : Controller
     {
-        FootballContext context;
         DataManager dataManager;
-        public HomeController(FootballContext context)
+        public HomeController()
         {
-            this.context = context;
             this.dataManager = new DataManager();
         }
         [HttpGet("Index")]

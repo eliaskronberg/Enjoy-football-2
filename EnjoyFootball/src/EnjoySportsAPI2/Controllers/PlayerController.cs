@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace EnjoyFootball.Controllers
 {
+    [Route("api/[controller]")]
     public class PlayerController : Controller
     {
         DataManager dataManager;

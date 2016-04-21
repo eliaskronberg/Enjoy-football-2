@@ -41,7 +41,7 @@ namespace EnjoySportsAPI2
             // Add framework services.
             services.AddMvc();
             services.AddApplicationInsightsTelemetry(Configuration);
-            services.AddEntityFramework().AddSqlServer().AddDbContext<FootballContext>(o => o.UseSqlServer(connString));
+            services.AddEntityFramework().AddSqlServer().AddDbContext<IdentityDbContext>(o => o.UseSqlServer(connString));
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<IdentityDbContext>().AddDefaultTokenProviders();
         }
 

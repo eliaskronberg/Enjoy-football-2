@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using EnjoyFootball.ViewModels;
 using EnjoyFootball.Models;
+using Microsoft.AspNet.Authorization;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace EnjoyFootball.Controllers
 {
+    [Authorize]
+
     public class FieldController : Controller
     {
         DataManager dataManager;

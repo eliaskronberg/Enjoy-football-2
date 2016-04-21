@@ -7,11 +7,14 @@ using EnjoyFootball.Models;
 using EnjoyFootball.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Authorization;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace EnjoyFootball.Controllers
 {
+    [Authorize]
+
     public class GameController : Controller
     {
         FootballContext context;
@@ -28,7 +31,7 @@ namespace EnjoyFootball.Controllers
         public async Task<IActionResult> Index(int id)
         {
             GameDetailsVM tempGame = await dataManager.getGameByID(id);
-            tempGame.CurrentPlayerId = await dataManager.GetSingleUserId(User.Identity.Name);
+            tempGame.CurrentPlayerId = await dataManager.GetCurrentUser();
             return View(tempGame);
         }
 
