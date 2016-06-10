@@ -1,0 +1,41 @@
+﻿@model List<TournamentDetailsVM>
+
+<div class="container tableclass table-responsive maincontent">
+
+    <div class="col-lg-12 col-xs-12 competitiondescription">
+        <div class="innercompetition col-lg-12">
+            <div class="col-lg-8 col-xs-12 sectioner">
+               Här hittar du de turneringar som andra användare skapat. Gå med i någon av dem eller skapa en egen turnering
+            </div>
+            <div class="col-lg-4 col-xs-12">
+                <div style="float:right">
+                    <input type="button" class="btn btn-success" value="Skapa turnering" id="createtour" onclick="location.href='@Url.Action("createtournament", "tournament")'" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="container-fluid">
+            <table id="gameList" class="table table-striped" data-toggle="table">
+                <thead>
+                    <tr>
+                        <th data-field="Location" data-sortable="true">Turneringsnamn</th>
+                        <th data-field="Total Slots" data-sortable="true">Turneringsstorlek</th>
+                        <th data-field="Open Slots" data-sortable="true">Lediga platser</th>
+                    </tr>
+                </thead>
+                <tbody id="ShownTr">
+                    @foreach (var item in Model)
+                    {
+                        int ledigplatser = item.TournamentSize - item.Teams.Count;
+                        <tr class="myClass">
+                            <td class="fieldName" id="@item.Id" data-fieldid="@item.Name"><a onclick="location.href='@Url.Action("Index", "Tournament", new { id = item.Id })'" href="#">@item.Name</a></td>
+                            <td>@item.TournamentSize teams</td>
+                            <td>@ledigplatser lediga platser</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

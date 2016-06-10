@@ -1,23 +1,176 @@
 ﻿@model PlayerInfoVM
 
-@if (Model.currentUser)
-{
-    <form action="Player" method="post">
-        <p>@Model.player.Id</p>
-        <p>@Model.player.Nickname</p>
-        <p>@Model.player.LastName</p>
-        <p>@Model.player.FirstName</p>
-        <p>@Model.player.City</p>
-        <p>@Model.player.Age</p>
-        <label>Det här är din användare</label>
-    </form>
-}
-else
-{
-    <p>@Model.player.Id</p>
-    <p>@Model.player.Nickname</p>
-    <p>@Model.player.LastName</p>
-    <p>@Model.player.FirstName</p>
-    <p>@Model.player.City</p>
-    <p>@Model.player.Age</p>
-}
+<div class="container maincontent">
+    @if (Model.currentUser)
+    {
+        <div class="container">
+            <div class="col-lg-4 col-xs-12 sectioner">
+                <h2>Mina uppgifter</h2>
+                <form asp-controller="player" asp-action="index">
+                    <br />
+                    <label asp-for="@Model.player.Nickname"></label>
+                    <input asp-for="@Model.player.Nickname" class="form-control" id="Nickname" value="@Model.player.Nickname">
+                    <span asp-validation-for="@Model.player.Nickname"></span>
+                    <br />
+                    <label asp-for="@Model.player.FirstName"></label>
+                    <input asp-for="@Model.player.FirstName" class="form-control" id="Firstname" value="@Model.player.FirstName">
+                    <span asp-validation-for="@Model.player.FirstName"></span>
+                    <br />
+                    <label asp-for="@Model.player.LastName"></label>
+                    <input asp-for="@Model.player.LastName" class="form-control" id="Lastname" value="@Model.player.LastName">
+                    <span asp-validation-for="@Model.player.LastName"></span>
+                    <br />
+                    <label asp-for="@Model.player.Age"></label>
+                    <input asp-for="@Model.player.Age" class="form-control" id="Age" value="@Model.player.Age">
+                    <span asp-validation-for="@Model.player.Age"></span>
+                    <br />
+                    <label asp-for="@Model.player.City"></label>
+                    <input asp-for="@Model.player.City" class="form-control" id="City" value="@Model.player.City">
+                    <span asp-validation-for="@Model.player.City"></span>
+                    <br />
+                    <label asp-for="@Model.player.Skill"></label>
+                    <input asp-for="@Model.player.Skill" class="form-control" id="Skill" value="@Model.player.Skill">
+                    <span asp-validation-for="@Model.player.Skill"></span>
+                </form>
+            </div>
+            <div class="col-lg-4 col-xs-12 sectioner">
+                <h2>Mina tävlingar</h2>
+                <div class="col-lg-6">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mina Matcher</th>
+                                </tr>
+                            </thead>
+                            <tbody class="content"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mina Turneringar</th>
+                                </tr>
+                            </thead>
+                            <tbody class="contentTurnering"></tbody>
+                        </table>
+                    </div>
+                </div> 
+            </div>
+            <div class="col-lg-4 col-xs-12 sectioner">
+                <h2>Mina medlemskap</h2>
+                <div class="col-xs-12">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Lagnamn</th>
+                                </tr>
+                            </thead>
+                            <tbody class="contentTeams"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container">
+            <div class="col-lg-4 col-xs-12 sectioner">
+                <h2>Uppgifter</h2>
+                <form asp-controller="player" asp-action="index">
+                    <br />
+                    <label asp-for="@Model.player.Nickname"></label>
+                    <p class="form-control" id="Nickname" value="@Model.player.Nickname">@Model.player.Nickname</p>
+                    <span asp-validation-for="@Model.player.Nickname"></span>
+                    <br />
+                    <label asp-for="@Model.player.FirstName"></label>
+                    <p class="form-control" id="Firstname" value="@Model.player.FirstName">@Model.player.FirstName</p>
+                    <span asp-validation-for="@Model.player.FirstName"></span>
+                    <br />
+                    <label asp-for="@Model.player.LastName"></label>
+                    <p class="form-control" id="Firstname" value="@Model.player.LastName">@Model.player.LastName</p>
+                    <span asp-validation-for="@Model.player.LastName"></span>
+                    <br />
+                    <label asp-for="@Model.player.Age"></label>
+                    <p class="form-control" id="Firstname" value="@Model.player.Age">@Model.player.Age</p>
+                    <span asp-validation-for="@Model.player.Age"></span>
+                    <br />
+                    <label asp-for="@Model.player.City"></label>
+                    <p class="form-control" id="Firstname" value="@Model.player.City">@Model.player.City</p>
+                    <span asp-validation-for="@Model.player.City"></span>
+                    <br />
+                    <label asp-for="@Model.player.Skill"></label>
+                    <p class="form-control" id="Firstname" value="@Model.player.Skill">@Model.player.Skill</p>
+                    <span asp-validation-for="@Model.player.Skill"></span>
+                </form>
+            </div>
+            <div class="col-lg-4 col-xs-12 sectioner">
+                <h2>Deltar i</h2>
+                <div class="col-lg-6">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Matcher</th>
+                                </tr>
+                            </thead>
+                            <tbody class="content"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Turneringar</th>
+                                </tr>
+                            </thead>
+                            <tbody class="contentTurnering"></tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            <div class="col-lg-4 col-xs-12 sectioner">
+                <h2>Medlem i</h2>
+                <div class="col-xs-12">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Lagnamn</th>
+                                </tr>
+                            </thead>
+                            <tbody class="contentTeams"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div id="myId" style="display:none">@Model.player.Id</div>
+<script>
+    $(document).ready(function()
+    {
+        var playerId = $("#myId").text();
+
+        $.getJSON("/player/GetGamesByPlayerId", { "id": playerId }, function (result) {        
+            $.each(result, function (index, game) {
+                $(".content").append("<tr><td><a href='/game/index/"+game.Id+"'>" + game.Field + "</a></td></tr>")
+
+            });
+        });
+        $.getJSON("/player/GetTeamsByPlayerId", { "id": playerId }, function (data) {
+            $.each(data, function (index, team) {
+                $(".contentTeams").append("<tr><td><a href='/team/index/" + team.Id + "'>" + team.Name + "</a></td></tr>")
+            });
+        });
+        
+    })
+</script>

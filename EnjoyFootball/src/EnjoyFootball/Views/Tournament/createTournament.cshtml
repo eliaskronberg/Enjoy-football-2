@@ -1,0 +1,68 @@
+﻿@model TournamentDetailsVM
+
+<link href="~/css/jquery-ui.min.css" rel="stylesheet" />
+
+@if (ViewData["FieldIsInvalid"] != null)
+{
+    <h3>Namnet finns redan i databasen</h3>
+}
+
+<div class="container maincontent">
+    <div class="col-lg-8">
+        <form asp-controller="Tournament" asp-action="createTournament">
+            <br />
+            <input asp-for="hostPlayerID" class="form-control" id="hostPlayerId" type="hidden">
+            <br />
+            <label asp-for="Name"></label>
+            <input id="tournamentName" asp-for="Name" class="form-control">
+            <span asp-validation-for="Name"></span>
+            <br />
+            <label asp-for="Description"></label>
+            <textarea id="tournamentDescription" rows="2" cols="20" class="form-control"></textarea>
+            <span asp-validation-for="Description"></span>
+            <br />
+            <label asp-for="TournamentSize"></label>
+            <input asp-for="TournamentSize" class="form-control" id="toursize" />
+            <span asp-validation-for="TournamentSize"></span>
+            <br />
+            <div id="teams" class="formdiv">
+                <label asp-for="Teams"></label>
+                <input class="form-control" id="teamName" placeholder="Search team">
+                <br />
+                <input type="button" id="addTeamBtn" value="add team" class="btn btn-success" />
+                <span asp-validation-for="Teams"></span>
+                <ul id="listTeams"></ul>
+            </div>
+            <br />
+            <div style="float:right">
+                <input id="submitAdmin" type="button" class="btn btn-success" value="Skapa turnering" />
+            </div>
+            <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
+        </form>
+    </div>
+</div>
+
+<script src="~/jquery-ui-min.js"></script>
+<script>
+        $(document).ready(function () {
+            var availableTeams = [];
+            var teamsInTour = [];
+            $.get("/team/getallteams", function (data) {
+                availableTeams = data;
+                $("#teamName").autocomplete({
+                    source: availableTeams
+                });
+            });
+            $("#addTeamBtn").click(function () {
+                $("#listTeams").append("<li>" + $("#teamName").val() + "<li>");
+                teamsInTour.push($("#teamName").val());
+                $("#teamName").val("");
+            });
+            $("#submitAdmin").click(function () {
+                var tournament = { Name: $("#tournamentName").val(), Id: 0, hostPlayerID: $("#hostPlayerId").val(), TeamNames: teamsInTour, TournamentSizeTeams: $("#toursize").val(), Description:$("#tournamentDescription").val() };
+                var sendingdata = JSON.stringify(tournament);
+                var lastGameId=0;
+                $.post("http://localhost:23718/api/tournament/Createtournament", { "tournament": tournament });        
+            });
+        });
+</script>

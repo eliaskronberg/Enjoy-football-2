@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EnjoySportsAPI2.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -17,7 +18,86 @@ namespace EnjoyFootball.Models
         List<Player> playerList = new List<Player>();
         List<Team> teamList = new List<Team>();
         List<Field> fieldList = new List<Field>();
+        List<Tournament> tournamentList = new List<Tournament>();
 
+        public List<Player> getTeamPlayersByTeamId(int teamId)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@teamId", SqlDbType.Int);
+                cmd.Parameters["@teamId"].Value = teamId;
+                cmd.CommandText = "SELECT * FROM dbo.MidTeamPlayer Where TeamId=@teamId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                Team theTeam = new Team();
+                List<string> playerIds = new List<string>();
+         
+                while (myreader.Read())
+                {
+                    playerIds.Add((string)myreader["PlayerId"]);
+                }
+
+                foreach (var playerId in playerIds)
+                {
+                    theTeam.Players.Add(GetPlayerInfo(playerId));
+                }
+                return theTeam.Players;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public Team GetTeamById(int teamId)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@teamId", SqlDbType.Int);
+                cmd.Parameters["@teamId"].Value = teamId;
+                cmd.CommandText = "SELECT * FROM dbo.Teams Where Id=@teamId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                Team theTeam = new Team();
+
+                while (myreader.Read())
+                {
+                    theTeam.Name = (string)myreader["Name"];
+                    theTeam.Id = (int)myreader["Id"];
+                }
+                return theTeam;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
 
         public List<Player> GetAllPlayers()
         {
@@ -56,6 +136,113 @@ namespace EnjoyFootball.Models
                     playerList.Add(newPlayer);
                 }
                 return playerList;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        internal List<Tournament> getTournamentByTeamId(int teamId)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                List<int> tournamentIds = new List<int>();
+                List<Tournament> theTournaments = new List<Tournament>();
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@teamId", SqlDbType.NVarChar);
+                cmd.Parameters["@teamId"].Value = teamId;
+                cmd.CommandText = "SELECT TournamentId FROM dbo.MidTournamentTeam Where TeamId=@teamId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                    tournamentIds.Add((int)myreader["TournamentId"]);
+
+                }
+                foreach (var item in tournamentIds)
+                {
+                    theTournaments.Add(GetTournamentById(item));
+                }
+
+                return theTournaments;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public void SetTeamsInTourGame(int matchId, Team team)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "Set_Teams_TournamentGame";
+                cmd.Parameters.Add(new SqlParameter("@TeamOne", team.Id));
+                cmd.Parameters.Add(new SqlParameter("@gameId", matchId));
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public List<int> getGamesByPlayerId(string id)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                List<int> gameIds = new List<int>();
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@playerId", SqlDbType.NVarChar);
+                cmd.Parameters["@playerId"].Value = id;
+                cmd.CommandText = "SELECT GameId FROM dbo.MidGamePlayer Where PlayerId=@playerId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                    gameIds.Add((int)myreader["GameId"]);
+
+                }
+                return gameIds;
             }
             catch (Exception e)
             {
@@ -109,6 +296,7 @@ namespace EnjoyFootball.Models
                 cmd.Parameters.Add(new SqlParameter("@Name", viewModel.Name));
                 cmd.Parameters.Add(new SqlParameter("@Turf", viewModel.Turf));
                 cmd.Parameters.Add(new SqlParameter("@Votes", votes));
+                cmd.Parameters.Add(new SqlParameter("@City", viewModel.City));
 
 
                 cmd.ExecuteNonQuery();
@@ -224,6 +412,39 @@ namespace EnjoyFootball.Models
 
         }
 
+        public int CreateTournament(string hostPlayerId, string tournamentName, Team hostPlayersTeam, string description, int tournamentsize)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "Create_Tournament";
+                cmd.Parameters.Add(new SqlParameter("@Name", tournamentName));
+                cmd.Parameters.Add(new SqlParameter("@hostPlayerId", hostPlayerId));
+                cmd.Parameters.Add(new SqlParameter("@description", description));
+                cmd.Parameters.Add(new SqlParameter("@tournamentsize", tournamentsize));
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+
+            return GetAllTournaments().Last().Id;
+        }
+
         public void UpdateGame(Game gameToChange)
         {
             
@@ -261,6 +482,37 @@ namespace EnjoyFootball.Models
 
         }
 
+        //public void UpdateTournamentGame(TournamentMatch gameToChange)
+        //{
+
+        //    SqlConnection myConnection = new SqlConnection();
+        //    myConnection.ConnectionString = connectionString;
+
+        //    try
+        //    {
+        //        myConnection.Open();
+
+        //        SqlCommand cmd = new SqlCommand();
+        //        cmd.Connection = myConnection;
+        //        cmd.CommandType = CommandType.StoredProcedure;
+        //        cmd.CommandText = "Update_TournamentGame";
+        //        cmd.Parameters.Add(new SqlParameter("@IsPlayed", gameToChange.isPlayed));
+        //        cmd.Parameters.Add(new SqlParameter("@IsTeamOneWinner", gameToChange.isTeamOneWinner));
+        //        cmd.Parameters.Add(new SqlParameter("@gameId", gameToChange.Id > -1 ? gameToChange.Id : 0));
+
+        //        cmd.ExecuteNonQuery();
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw e;
+        //    }
+        //    finally
+        //    {
+        //        myConnection.Close();
+        //    }
+
+        //}
 
         public List<Field> ListFields()
         {
@@ -289,7 +541,7 @@ namespace EnjoyFootball.Models
                     newField.Name = (string)myreader["Name"];
                     newField.Turf = (string)myreader["Turf"];
                     newField.Votes = (int)myreader["Votes"];
-
+                    newField.City = (string)myreader["City"];
 
                     fieldList.Add(newField);
                 }
@@ -359,6 +611,44 @@ namespace EnjoyFootball.Models
                 myConnection.Close();
             }
         }
+
+        public List<Tournament> GetAllTournaments()
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandText = "SELECT * from dbo.Tournaments";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                    Tournament newTournament = new Tournament();
+                    newTournament.hostPlayerID = (string)myreader["hostPlayerId"];
+                    newTournament.Name = (string)myreader["Name"];
+                    newTournament.Id = (int)myreader["Id"];
+                    newTournament.TournamentSize = (int)myreader["Tournamentsize"];
+
+                    tournamentList.Add(newTournament);
+                }
+                return tournamentList;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
         public Game getGameByID(int id)
         {
             var game = GetAllGames()
@@ -381,8 +671,6 @@ namespace EnjoyFootball.Models
         }
         public void AddPlayerToGame(string playerNameToAdd, int id)
         {
-            //var player=GetAllPlayers().Where(o => o.Nickname == playerNameToAdd).SingleOrDefault();
-            var playerId = GetSingleUserId(playerNameToAdd);
 
             SqlConnection myConnection = new SqlConnection();
             myConnection.ConnectionString = connectionString;
@@ -395,8 +683,40 @@ namespace EnjoyFootball.Models
                 cmd.Connection = myConnection;
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = "Add_Player_ToGame";
-                cmd.Parameters.Add(new SqlParameter("@playerId", playerId));
+                cmd.Parameters.Add(new SqlParameter("@playerId", playerNameToAdd));
                 cmd.Parameters.Add(new SqlParameter("@gameId", id));
+
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+
+        }
+
+        public void AddTeamToTournament(int teamId, int tournamentId)
+        {
+
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "Add_Team_To_Tournament";
+                cmd.Parameters.Add(new SqlParameter("@tournamentId", tournamentId));
+                cmd.Parameters.Add(new SqlParameter("@teamId", teamId));
 
 
                 cmd.ExecuteNonQuery();
@@ -678,6 +998,321 @@ namespace EnjoyFootball.Models
             EditOwnerInjection(tempOwners, gameId);
         }
 
+        public List<Team> GetTeamsByPlayerId(string playerId)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                List<int> teamIds = new List<int>();
+                List<Team> theTeams = new List<Team>();
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@playerId", SqlDbType.NVarChar);
+                cmd.Parameters["@playerId"].Value = playerId;
+                cmd.CommandText = "SELECT TeamId FROM dbo.MidTeamPlayer Where PlayerId=@playerId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                    teamIds.Add((int)myreader["TeamId"]);
+
+                }
+                foreach (var item in teamIds)
+                {
+                    theTeams.Add(GetTeamById(item));
+                }
+
+                return theTeams;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public Tournament GetTournamentById(int tournamentId)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@tournamentId", SqlDbType.Int);
+                cmd.Parameters["@tournamentId"].Value = tournamentId;
+                cmd.CommandText = "SELECT * FROM dbo.Tournaments Where Id=@tournamentId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                Tournament theTournament = new Tournament();
+
+                while (myreader.Read())
+                {
+                    theTournament.Name = (string)myreader["Name"];
+                    theTournament.Id = (int)myreader["Id"];
+                    theTournament.hostPlayerID = (string)myreader["hostPlayerId"];
+                    theTournament.Description = (string)myreader["Description"];
+                }
+                return theTournament;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public List<Team> getTournamentTeamssByTournamentId(int tournamentId)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@tournamentId", SqlDbType.Int);
+                cmd.Parameters["@tournamentId"].Value = tournamentId;
+                cmd.CommandText = "SELECT * FROM dbo.MidTournamentTeam Where TournamentId=@tournamentId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                Tournament theTournament = new Tournament();
+                List<int> TeamIds = new List<int>();
+
+                while (myreader.Read())
+                {
+                    TeamIds.Add((int)myreader["TeamId"]);
+                }
+
+                foreach (var teamId in TeamIds)
+                {
+                    theTournament.Teams.Add(GetTeamById(teamId));
+                }
+                return theTournament.Teams;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public List<Team> getAllTeams()
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandText = "SELECT * from dbo.Teams";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                while (myreader.Read())
+                {
+                    Team tempTeam = new Team();
+                    tempTeam.Name= (string)myreader["Name"];
+                    tempTeam.Id = (int)myreader["Id"];
+
+                    teamList.Add(tempTeam);
+                }
+                return teamList;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public void createTournamentGame(TournamentMatch gameModel)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "Create_TournamentGame";
+                cmd.Parameters.Add(new SqlParameter("@TeamOneId", gameModel.teamOne.Id));
+                cmd.Parameters.Add(new SqlParameter("@TeamTwoId", gameModel.teamTwo.Id));
+                cmd.Parameters.Add(new SqlParameter("@IsPlayed", false));
+                cmd.Parameters.Add(new SqlParameter("@TournamentId", gameModel.tournamentId));
+                cmd.Parameters.Add(new SqlParameter("@TournamentRound", gameModel.TournamentRound));
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+
+        }
+
+        public List<TournamentMatch> getTournamentGamesByTourId(int tournamentId)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@tournamentId", SqlDbType.Int);
+                cmd.Parameters["@tournamentId"].Value = tournamentId;
+                cmd.CommandText = "SELECT * FROM dbo.TournamentGames Where TournamentId=@tournamentId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                List<TournamentMatch> tournanmentMatches = new List<TournamentMatch>();
+
+                while (myreader.Read())
+                {
+                    TournamentMatch tmpTournamentMatch = new TournamentMatch();
+                    tmpTournamentMatch.teamOne = GetTeamById((int)myreader["TeamIdOne"]);
+                    tmpTournamentMatch.teamTwo = GetTeamById((int)myreader["TeamIdTwo"]);
+                    tmpTournamentMatch.TournamentRound = (int)myreader["TournamentRound"];
+                    tmpTournamentMatch.isPlayed = (bool)myreader["isPlayed"];
+                    tmpTournamentMatch.Id = (int)myreader["Id"];
+                    if (tmpTournamentMatch.isPlayed)
+                    {
+                    tmpTournamentMatch.Result = (string)myreader["Result"];
+                        tmpTournamentMatch.isTeamOneWinner = (bool)myreader["IsTeamOneWinner"];
+                    }
+                    tmpTournamentMatch.tournamentId = (int)myreader["TournamentId"];
+                    tournanmentMatches.Add(tmpTournamentMatch);
+                }
+
+               
+                return tournanmentMatches;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public TournamentMatch getTournamentMatchByid(int id)
+        {
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            //Adding Games to GamesList
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.Parameters.Add("@matchId", SqlDbType.Int);
+                cmd.Parameters["@matchId"].Value = id;
+                cmd.CommandText = "SELECT * FROM dbo.TournamentGames Where Id=@matchId";
+                SqlDataReader myreader = cmd.ExecuteReader();
+
+                TournamentMatch theMatch = new TournamentMatch();
+
+                while (myreader.Read())
+                {
+                    theMatch.teamOne = GetTeamById((int)myreader["TeamIdOne"]);
+                    theMatch.teamTwo = GetTeamById((int)myreader["TeamIdTwo"]);
+                    theMatch.TournamentRound = (int)myreader["TournamentRound"];
+                    theMatch.isPlayed = (bool)myreader["isPlayed"];
+                    //tmpTournamentMatch.isTeamOneWinner = (bool)myreader["IsTeamOneWinner"];
+                    theMatch.tournamentId = (int)myreader["TournamentId"];
+                    theMatch.Id = (int)myreader["Id"];
+                }
+                return theMatch;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            finally
+            {
+                myConnection.Close();
+            }
+        }
+
+        public void updateTourMatch(bool isGamePlayed, bool isTeamOneWinner, int tournamentGameId, string result)
+        {
+
+            SqlConnection myConnection = new SqlConnection();
+            myConnection.ConnectionString = connectionString;
+
+            try
+            {
+                myConnection.Open();
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = myConnection;
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = "Update_TournamentGame";
+                cmd.Parameters.Add(new SqlParameter("@IsPlayed", isGamePlayed));
+                cmd.Parameters.Add(new SqlParameter("@IsTeamOneWinner", isTeamOneWinner));
+                cmd.Parameters.Add(new SqlParameter("@gameId", tournamentGameId));
+                cmd.Parameters.Add(new SqlParameter("@result", result));
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                myConnection.Close();
+            }
+        }
 
     }
 

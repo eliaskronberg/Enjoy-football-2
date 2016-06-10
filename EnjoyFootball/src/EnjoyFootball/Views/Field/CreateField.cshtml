@@ -1,40 +1,203 @@
 ﻿@model CreateFieldVM
 
+<style type="text/css">
+     html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+      .controls {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      #pac-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 300px;
+      }
+
+      #pac-input:focus {
+        border-color: #4d90fe;
+      }
+
+      .pac-container {
+        font-family: Roboto;
+      }
+
+      #type-selector {
+        color: #fff;
+        background-color: #4d90fe;
+        padding: 5px 11px 0px 11px;
+      }
+
+      #type-selector label {
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 300;
+      }
+      #target {
+        width: 345px;
+      }
+</style>
+
 @if (ViewData["FieldIsInvalid"] != null)
 {
     <h3>Namnet finns redan i databasen</h3>
 }
+<div class="container">
+    <form asp-controller="Field" asp-action="CreateField">
+        <br />
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" id="Name">
+        <span asp-validation-for="Name"></span>
+        <br />
+        <label asp-for="Description"></label>
+        <input asp-for="Description" class="form-control" id="Description">
+        <span asp-validation-for="Description"></span>
+        <br />
+        <label asp-for="Capacity"></label>
+        <input asp-for="Capacity" class="form-control" id="Capacity">
+        <span asp-validation-for="Capacity"></span>
+        <br />
+        <label asp-for="Lighting"></label>
+        <input asp-for="Lighting" class="form-control" id="Lightning">
+        <span asp-validation-for="Lighting"></span>
+        <br />
+        <label asp-for="Turf"></label>
+        <input asp-for="Turf" class="form-control" id="Turf">
+        <span asp-validation-for="Turf"></span>
+        <br />
+        <label asp-for="City"></label>
+        <input asp-for="City" class="form-control" id="City">
+        <span asp-validation-for="City"></span>
+        <br />
+        <label asp-for="Coordinates"></label>
+        <input asp-for="Coordinates" class="form-control" type="hidden">
+        <span asp-validation-for="Coordinates"></span>
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+<div id="map" style="height:300px"></div>
+        <br />
+        <div style="float:right">
+            <a href="/game/creategame"><input id="submitCreateField" type="button" class="btn btn-success" value="Create Field" /></a>
+        </div>
+        <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
+    </form>
+   
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsvIXpGgsh2V_xQsAnAel4SGCqlq7vumY &libraries=places&callback=initAutocomplete" async defer>
+    </script>
+    <script>
+        function placeMarkerAndPanTo(latLng, map) {
+            var marker = new google.maps.Marker({
+                position: latLng,
+                map: map
+            });
+            map.panTo(latLng);
+        }
+     
+        var map;
+        var coordinates;
+            function initAutocomplete() {
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 59.326242, lng: 18.0676409 },
+                    zoom: 13,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+                map.addListener('click', function (e) {
+                    placeMarkerAndPanTo(e.latLng, map);
+                    (e.latLng);
+                    coordinates = e.latLng;
+                });
 
+                // Create the search box and link it to the UI element.
+                var input = document.getElementById('pac-input');
+                var searchBox = new google.maps.places.SearchBox(input);
+                map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-<form asp-controller="Field" asp-action="CreateField">
-    <br />
-    <label asp-for="Name"></label>
-    <input asp-for="Name" class="form-control">
-    <span asp-validation-for="Name"></span>
-    <br />
-    <label asp-for="Description"></label>
-    <input asp-for="Description" class="form-control">
-    <span asp-validation-for="Description"></span>
-    <br />
-    <label asp-for="Capacity"></label>
-    <input asp-for="Capacity" class="form-control">
-    <span asp-validation-for="Capacity"></span>
-    <br />
-    <label asp-for="Lighting"></label>
-    <input asp-for="Lighting" class="form-control">
-    <span asp-validation-for="Lighting"></span>
-    <br />
-    <label asp-for="Turf"></label>
-    <input asp-for="Turf" class="form-control">
-    <span asp-validation-for="Turf"></span>
-    <br />
-    <label asp-for="Coordinates"></label>
-    <input asp-for="Coordinates" class="form-control">
-    <span asp-validation-for="Coordinates"></span>
-    <br />
+                // Bias the SearchBox results towards current map's viewport.
+                map.addListener('bounds_changed', function () {
+                    searchBox.setBounds(map.getBounds());
+                });
 
-    <div style="float:right">
-        <input id="submitAdmin" type="submit" class="btn btn-success" value="Logga in" />
-    </div>
-    <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
-</form>
+                var markers = [];
+                // Listen for the event fired when the user selects a prediction and retrieve
+                // more details for that place.
+                searchBox.addListener('places_changed', function () {
+                    var places = searchBox.getPlaces();
+
+                    if (places.length == 0) {
+                        return;
+                    }
+
+                    // Clear out the old markers.
+                    markers.forEach(function (marker) {
+                        marker.setMap(null);
+                    });
+                    markers = [];
+
+                    // For each place, get the icon, name and location.
+                    var bounds = new google.maps.LatLngBounds();
+                    places.forEach(function (place) {
+                        var icon = {
+                            url: place.icon,
+                            size: new google.maps.Size(71, 71),
+                            origin: new google.maps.Point(0, 0),
+                            anchor: new google.maps.Point(17, 34),
+                            scaledSize: new google.maps.Size(25, 25)
+                        };
+
+                        // Create a marker for each place.
+                        //markers.push(new google.maps.Marker({
+                        //    map: map,
+                        //    icon: icon,
+                        //    title: place.name,
+                        //    position: place.geometry.location
+                        //}));
+
+                        if (place.geometry.viewport) {
+                            // Only geocodes have viewport.
+                            bounds.union(place.geometry.viewport);
+                        } else {
+                            bounds.extend(place.geometry.location);
+                        }
+                    });
+                    map.fitBounds(bounds);
+                });
+            }
+        
+                $("#submitCreateField").click(function () {
+                    var stringCoordinates = String(coordinates);
+                    var IsLight = false;
+                    if ($("#Lightning").is(':checked')) {
+                        IsLight = true;
+                    }
+                    else { IsLight = false; }
+
+                    var field = { Description: $("#Description").val(), Name: $("#Name").val(), Capacity: $("#Capacity").val(), Lightning: IsLight, Turf: $("#Turf").val(), Coordinates: stringCoordinates, Id: 0, Votes: 0, Condition: 0, City: $("#City").val() };
+                    var sendingdata = JSON.stringify(field);
+                    $.ajax({
+                        url: 'http://localhost:23718/api/field/createfield',
+                        contentType: 'application/json; charset=utf-8',
+                        type: 'POST',
+                        cache: false,
+                        data: sendingdata,
+                        dataType: "json"
+                    });
+
+                })       
+    </script>
+</div>

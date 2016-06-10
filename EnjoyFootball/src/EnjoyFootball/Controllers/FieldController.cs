@@ -12,7 +12,6 @@ using Microsoft.AspNet.Authorization;
 namespace EnjoyFootball.Controllers
 {
     [Authorize]
-
     public class FieldController : Controller
     {
         DataManager dataManager;
@@ -21,9 +20,9 @@ namespace EnjoyFootball.Controllers
             this.dataManager = new DataManager();
         }
         // GET: /<controller>/
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var list = dataManager.ListFields();
+            var list = await dataManager.ListFields();
             var fieldVmList = new List<FieldVM>();
             foreach (var field in list)
             {
@@ -37,9 +36,16 @@ namespace EnjoyFootball.Controllers
                 tmp.Name = field.Name;
                 tmp.Turf = field.Turf;
                 tmp.Votes = field.Votes;
+                tmp.City = field.City;
                 fieldVmList.Add(tmp);
             }
             return View(fieldVmList);
+        }
+        public async Task<IActionResult> GetFieldById(int id)
+        {
+            var allfields = await dataManager.ListFields();
+            var theField=allfields.Where(o => o.Id == id).SingleOrDefault();
+            return Json(theField);
         }
 
         public IActionResult CreateField()

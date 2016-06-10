@@ -1,143 +1,212 @@
 ﻿@model GameDetailsVM
 
-<div>
-    @{ bool isOwner = false;}
-    @foreach (var item in Model.Owner.Split(';'))
+
+@{ bool isOwner = false;}
+@foreach (var item in Model.Owner.Split(';'))
+{
+    @if (Model.CurrentPlayerId == item)
     {
-        @if (Model.CurrentPlayerId == item)
-        {
-            isOwner = true;
-        }
+        isOwner = true;
     }
-    @if (isOwner)
+}
+@if (isOwner)
+{
+    <div class="container maincontent">
+        <div class="container-fluid">
+            <div class="col-lg-4 sectioner">
+                <h2>Matchdetaljer </h2>
+                <form asp-controller="Game" asp-action="UpdateGame">
+                    <br />
+                    <label asp-for="Description"></label>
+                    <input asp-for="Description" class="form-control" id="description" value="@Model.Description">
+                    <span asp-validation-for="Description"></span>
+                    <input asp-for="Owner" class="form-control" value="@Model.Owner" id="owner" type="hidden"></input>
+                    <br />
+                    <label asp-for="Field"></label>
+                    <select id="selectedField" asp-for="Field" class="form-control" selected="@Model.Field"></select>
+                    <span asp-validation-for="Field"></span>
+                    <br />
+                    <label asp-for="OpenSlots"></label>
+                    <input asp-for="OpenSlots" class="form-control" id="openslots" value="@Model.OpenSlots">
+                    <span asp-validation-for="OpenSlots"></span>
+                    <br />
+                    <label asp-for="StartTime"></label>
+                    <input asp-for="StartTime" class="form-control" id="starttime" value="@Model.StartTime">
+                    <span asp-validation-for="StartTime"></span>
+                    <br />
+                    <input asp-for="Id" type="hidden" value="@Model.Id" id="gameid" />
 
-    {
-        <form asp-controller="Game" asp-action="UpdateGame">
 
-            <br />
-            <label asp-for="Description"></label>
-            <input asp-for="Description" class="form-control" value="@Model.Description">
-            <span asp-validation-for="Description"></span>
-            <br />
-           
-            <label asp-for="Field"></label>
-            <select id="selectedField" asp-for="Field" class="form-control" selected="@Model.Field"></select>
-            <span asp-validation-for="Field"></span>
-            <br />
-            <label asp-for="OpenSlots"></label>
-            <input asp-for="OpenSlots" class="form-control" value="@Model.OpenSlots">
-            <span asp-validation-for="OpenSlots"></span>
-            <br />
-            <label asp-for="StartTime"></label>
-            <input asp-for="StartTime" class="form-control" value="@Model.StartTime">
-            <span asp-validation-for="StartTime"></span>
-            <br />
-            <input asp-for="Id" type="hidden" value="@Model.Id" />
-            <input id="submitAdmin" type="submit" class="btn btn-success" value="Save Changes" @*onclick="location.href='@Url.Action(" UpdateGame","Game", Model)'"*@ />
-            <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
-        </form>
-        <label asp-for="IsActive"></label>
-        GameBoolToEditVM bte = new GameBoolToEditVM(Model.Id);
+                    @{GameBoolToEditVM bte = new GameBoolToEditVM(Model.Id); }
 
-            @if (Model.IsActive)
-            {
-                bte.BoolToEdit = false;
-                <input type="checkbox" checked="checked" onchange="location.href='@Url.Action("ChangeActive", "Game", bte)'">
-            }
-            else
-            {
-                bte.BoolToEdit = true;
-                <input type="checkbox" onchange="location.href='@Url.Action("ChangeActive", "Game", bte)'">
-            }
-            <span asp-validation-for="IsActive"></span>
-            <br/>
-            <label asp-for="IsPublic"></label>
-            @if (Model.IsPublic)
-            {
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <label asp-for="IsActive"></label>
+                            @if (Model.IsActive)
+                            {
+                                bte.BoolToEdit = false;
+                                <input type="checkbox" checked="checked" onchange="location.href='@Url.Action("ChangeActive", "Game", bte)'">
+                            }
+                            else
+                            {
+                                bte.BoolToEdit = true;
+                                <input type="checkbox" onchange="location.href='@Url.Action("ChangeActive", "Game", bte)'">
+                            }
+                            <span asp-validation-for="IsActive"></span>
+                        </div>
+                        <div class="col-lg-6">
+                            <label asp-for="IsPublic"></label>
+                            @if (Model.IsPublic)
+                            {
 
-                bte.BoolToEdit = false;
-                <input type="checkbox" checked="checked" onchange="location.href='@Url.Action("ChangePublic", "Game", bte)'">
-            }
-            else
-            {
-                bte.BoolToEdit = true;
-                <input type="checkbox" onchange="location.href='@Url.Action("ChangePublic", "Game", bte)'">
-            }
-            <span asp-validation-for="IsPublic"></span>
-            <br />
-
-            @*<p>plan: @Model.Field</p>
-                <p>lediga platser: @Model.OpenSlots</p>
-                <p>tid: @Model.StartTime</p>
-                <p>aktiv: @Model.IsActive</p>
-                <p>@Model.Id</p>
-                <input type="button" value="Edit gameinfo" onclick="location.href='@Url.Action("EditGame", "Game", Model.Id)'" />*@
-            <p>Spelare: </p>
-            @foreach (var item in Model.PlayerList)
-            {
-                UserToRemoveVM utr = new UserToRemoveVM(item.Id, Model.Id);
-
-                <p>@item.Nickname  <input id="btnKickFrom<game" type="button" value="Kick from Game" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer","Game", utr)'" /></p>
-
-                bool isOwnerCheck = false;
-                @foreach (var user in Model.Owner.Split(';'))
-                    {
-                    @if (item.Id == user)
-                    {
-                        isOwnerCheck = true;
-                    }
-                }
-                if (isOwnerCheck)
+                                bte.BoolToEdit = false;
+                                <input type="checkbox" checked="checked" onchange="location.href='@Url.Action("ChangePublic", "Game", bte)'">
+                            }
+                            else
+                            {
+                                bte.BoolToEdit = true;
+                                <input type="checkbox" onchange="location.href='@Url.Action("ChangePublic", "Game", bte)'">
+                            }
+                            <span asp-validation-for="IsPublic"></span>
+                        </div>
+                        <br />
+                    </div>
+                    <input id="submit" type="button" class="btn btn-success" value="Save Changes" />
+                    <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
+                </form>
+            </div>
+            <div class="col-lg-4 sectioner">
+                <h2>Spelare </h2>
+                @*SKriv ut alla spelarna i gamet*@
+                @foreach (var item in Model.PlayerList)
                 {
-                    <input id="btnMakeOwner<game" type="checkbox" checked="checked" onchange="location.href='@Url.Action("MakePeasant", "Game", utr)'" />
+                    UserToRemoveVM utr = new UserToRemoveVM(item.Id, Model.Id);
+                    <div class="col-lg-12">
+                        @*//checked if player is isOwner. if true, dont show leave button*@
+                        <div class="col-lg-4 col-xs-12">
+                            <h4><a onclick="location.href='@Url.Action("Index", "player", new { id = item.Id })'" href="#">@item.Nickname</a></h4>
+                        </div>
+                        @*Make owner and make peasant checkbox*@
+                        @if (item.Id != Model.Owner.Trim(';'))
+                        {
+                            <div class="col-lg-3">
+                                <input id="btnKickFrom<game" type="button" value="Kick" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer", "Game", utr)'" />
+                            </div>
+                            bool isOwnerCheck = false;
+                            @foreach (var user in Model.Owner.Split(';'))
+                            {
+                                @if (item.Id == user)
+                                {
+                                    isOwnerCheck = true;
+                                }
+                            }
+                            <div class="col-lg-5">
+                                <h5>
+                                    Admin
+                                    @if (isOwnerCheck)
+                                    {
+                                        <input id="btnMakeOwner<game" type="checkbox" checked="checked" onchange="location.href='@Url.Action("MakePeasant", "Game", utr)'" />
+                                    }
+                                    else {
+                                        <input id="btnMakeOwner<game" type="checkbox" onchange="location.href='@Url.Action("MakeOwner", "Game", utr)'" />
+                                    }
+                                </h5>
+                            </div>
+                        }
+                    </div>
                 }
-                else {
-                    <input id="btnMakeOwner<game" type="checkbox" onchange="location.href='@Url.Action("MakeOwner", "Game", utr)'" />
-                }
 
-            }
-            }
-            else
-            {
-                <p>plan: @Model.Field</p>
-                <p>lediga platser: @Model.OpenSlots</p>
-                <p>tid: @Model.StartTime</p>
-                <p>aktiv: @Model.IsActive</p>
-                <p>@Model.Id</p>
+            </div>
+        </div>
+    </div>
 
-                <p>Spelare: </p>@foreach (var item in Model.PlayerList)
-                {
-                    @if (Model.CurrentPlayerId == item.Id)
-                    {
-                        UserToRemoveVM utr = new UserToRemoveVM(item.Id, Model.Id);
-                        <p> <a href="/player/index/@item.Id">@item.Nickname</a>  <input id="btnLeave<game" type="button" value="Leave Game" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer","Game", utr)'" /></p>
-                    }
-                    else
-                    {
-                        <p>
-                            <a href="/player/index/@item.Id">@item.Nickname</a>
-                        </p>
-                    }
-                }
-            }
-    @{ bool alreadyInGame = false;}
-    @foreach (var item in Model.PlayerList)
-    {
-        if (Model.CurrentPlayerId == item.Id)
-        {
-            alreadyInGame = true;
+    <div class="container-fluid">
 
-        }
-    }
-    @if (!alreadyInGame)
-    {
-        <input id="joinGame" type="button" value="Join Game" onclick="location.href='@Url.Action("Addplayer", "Game", Model)'" href="#" />
-    }
-</div>
+    </div>
+                        }
+                        else
+                        {
+                            <div class="container">
+                                <div class="container-fluid">
+                                    <div class="col-lg-4">
+                                        <h2>Matchdetaljer</h2>
+                                        <form asp-controller="Game" asp-action="UpdateGame">
+                                            <br />
+                                            <label asp-for="Description"></label>
+                                            <p asp-for="Description" class="form-control" id="description" value="@Model.Description">@Model.Description</p>
+                                            <span asp-validation-for="Description"></span>
+                                            <br />
+                                            <label asp-for="Field"></label>
+                                            <p asp-for="Field" class="form-control" selected="@Model.Field">@Model.Field</p>
+                                            <span asp-validation-for="Field"></span>
+                                            <br />
+                                            <label asp-for="OpenSlots"></label>
+                                            <p asp-for="OpenSlots" class="form-control" id="openslots" value="@Model.OpenSlots">@Model.OpenSlots</p>
+                                            <span asp-validation-for="OpenSlots"></span>
+                                            <br />
+                                            <label asp-for="StartTime"></label>
+                                            <p asp-for="StartTime" class="form-control" id="starttime" value="@Model.StartTime">@Model.StartTime</p>
+                                            <span asp-validation-for="StartTime"></span>
+                                            <br />
+                                            <input asp-for="Id" type="hidden" value="@Model.Id" id="gameid" />
+                                        </form>
+                                    </div>
 
+                                    <div class="col-lg-4">
+                                        <h2>Spelare</h2>
+                                        @foreach (var item in Model.PlayerList)
+                                        {
+                                            <div class="col-lg-12">
+                                                @if (Model.CurrentPlayerId == item.Id)
+                                                {
+                                                    UserToRemoveVM utr = new UserToRemoveVM(item.Id, Model.Id);
+                                                    <div class="col-lg-4">
+                                                        <h4><a href="/player/index/@item.Id">@item.Nickname</a></h4>
+                                                    </div>
+                                                    <div class="col-lg-3">
+                                                        <input id="btnLeave<game" type="button" value="Leave" class="btn btn-alert" onclick="location.href='@Url.Action("RemovePlayer", "Game", utr)'" />
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-lg-4">
+                                                        <h4><a href="/player/index/@item.Id">@item.Nickname </a></h4>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            bool alreadyInGame = false;
+                                                @foreach (var item1 in Model.PlayerList)
+                                                {
+                                                    if (Model.CurrentPlayerId == item1.Id)
+                                                    {
+                                                        alreadyInGame = true;
+
+                                                    }
+                                                }
+                                                @if (!alreadyInGame)
+                                                {
+                                                    <div class="col-lg-6">
+                                                        <input id="joinGame" type="button" value="Join Game" onclick="location.href='@Url.Action("Addplayer", "Game", Model)'" href="#" />
+                                                    </div>
+                                                }
+                                                }
+                                    </div>
+                                <div class="col-lg-4">
+                                    <h2>Hitta till @Model.Field</h2>
+                                    <iframe width="600"
+                                            height="450"
+                                            frameborder="0" style="border:0"
+                                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyCsvIXpGgsh2V_xQsAnAel4SGCqlq7vumY 
+    &q=@Model.FieldId" allowfullscreen></iframe>
+                                </div>
+                                </div>
+                            </div>
+                                                }
 
 <script>
     $(document).ready(function () {
+
         $.post("/Game/ListFieldName", function (result) {
             for (var i = 0 ; i < result.length; i++) {
                 var value = result[i];
@@ -145,8 +214,26 @@
                     .attr("value", value)
                     .text(value));
             }
-        })
+        });
 
+    });
+    $("#submit").click(function () {
+
+        var field = $('#selectedField').val();
+        $.get("/game/GetFieldId", { "fieldName": field }, function (result) {
+            var fieldId = result;
+
+            var game = { Description: $("#description").val(), IsPublic: true, Field: fieldId, IsActive: true, Owner: $("#owner").val(), MaxSlots: $("#openslots").val(), StartTime: $("#starttime").val(), Id: $("#gameid").val() };
+            var sendingdata = JSON.stringify(game);
+            $.ajax({
+                url: 'http://localhost:23718/api/game/updategame',
+                contentType: 'application/json; charset=utf-8',
+                type: 'PUT',
+                cache: false,
+                data: sendingdata,
+                dataType: "json"
+            });
+        });
     });
 </script>
 

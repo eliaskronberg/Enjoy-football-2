@@ -14,6 +14,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoyFootball", "src\EnjoyF
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "EnjoySportsAPI2", "src\EnjoySportsAPI2\EnjoySportsAPI2.xproj", "{3289DEE6-FF6D-4AFA-98D3-E476329ECFC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnjoyFootball_IOS_Univ", "EnjoyFootball_IOS_Univ\EnjoyFootball_IOS_Univ.csproj", "{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -78,6 +80,26 @@ Global
 		{3289DEE6-FF6D-4AFA-98D3-E476329ECFC1}.Release|iPhone.Build.0 = Release|Any CPU
 		{3289DEE6-FF6D-4AFA-98D3-E476329ECFC1}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{3289DEE6-FF6D-4AFA-98D3-E476329ECFC1}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Ad-Hoc|Any CPU.ActiveCfg = Ad-Hoc|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Ad-Hoc|iPhoneSimulator
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Ad-Hoc|iPhoneSimulator.Build.0 = Ad-Hoc|iPhoneSimulator
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.AppStore|Any CPU.ActiveCfg = AppStore|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.AppStore|iPhone.Build.0 = AppStore|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.AppStore|iPhoneSimulator.ActiveCfg = AppStore|iPhoneSimulator
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.AppStore|iPhoneSimulator.Build.0 = AppStore|iPhoneSimulator
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Debug|Any CPU.ActiveCfg = Debug|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Debug|iPhone.Build.0 = Debug|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Release|Any CPU.ActiveCfg = Release|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Release|iPhone.ActiveCfg = Release|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Release|iPhone.Build.0 = Release|iPhone
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,5 +107,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D5C79691-B4C5-4426-8B72-C6132A8963D0} = {427D9EF3-A6A6-4634-AF4E-DF6357F27C04}
 		{3289DEE6-FF6D-4AFA-98D3-E476329ECFC1} = {427D9EF3-A6A6-4634-AF4E-DF6357F27C04}
+		{8C8F4471-3373-49E5-AFB3-DB7E46BD5C0F} = {427D9EF3-A6A6-4634-AF4E-DF6357F27C04}
 	EndGlobalSection
 EndGlobal

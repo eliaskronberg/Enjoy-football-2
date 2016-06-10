@@ -40,5 +40,17 @@ namespace EnjoyFootball.Controllers
             return playerId;
         }
 
+        [HttpGet ("GetGamesByPlayerId/{id}")]
+        public List<int> GetGamesByPlayerId (string id)
+        {
+            var gameIds=dataManager.getGamesByPlayerId(id);
+            return gameIds;
+        }
+        [HttpGet("GetTeamsByPlayerId/{id}")]
+        public List<Team> GetTeamByPlayerId(string id)
+        {
+            var Teams = dataManager.GetTeamsByPlayerId(id);
+            return Teams;
+        }
     }
 }

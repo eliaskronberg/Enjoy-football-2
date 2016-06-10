@@ -9,6 +9,7 @@ using EnjoyFootball.Models;
 
 namespace EnjoyFootball.Controllers
 {
+        [Route("api/[controller]")]
     public class FieldController : Controller
     {
         DataManager dataManager;
@@ -17,25 +18,27 @@ namespace EnjoyFootball.Controllers
             this.dataManager = new DataManager();
         }
         // GET: /<controller>/
+        [HttpGet("Index")]
         public List<Field> Index()
         {
             var list = dataManager.ListFields();
-            var fieldList = new List<Field>();
-            foreach (var field in list)
-            {
-                Field tmp = new Field();
-                tmp.Capacity = field.Capacity;
-                tmp.Condition = field.Condition;
-                tmp.Coordinates = field.Coordinates;
-                tmp.Description = field.Description;
-                tmp.Lighting = field.Lighting;
-                tmp.Id = field.Id;
-                tmp.Name = field.Name;
-                tmp.Turf = field.Turf;
-                tmp.Votes = field.Votes;
-                fieldList.Add(tmp);
-            }
-            return fieldList;
+            return list;
+            //var fieldList = new List<Field>();
+            //foreach (var field in list)
+            //{
+            //    Field tmp = new Field();
+            //    tmp.Capacity = field.Capacity;
+            //    tmp.Condition = field.Condition;
+            //    tmp.Coordinates = field.Coordinates;
+            //    tmp.Description = field.Description;
+            //    tmp.Lighting = field.Lighting;
+            //    tmp.Id = field.Id;
+            //    tmp.Name = field.Name;
+            //    tmp.Turf = field.Turf;
+            //    tmp.Votes = field.Votes;
+            //    fieldList.Add(tmp);
+            //}
+            //return fieldList;
         }
 
         public IActionResult CreateField()
@@ -43,8 +46,8 @@ namespace EnjoyFootball.Controllers
             return View();
         }
 
-        [HttpPost]
-        public bool CreateField(Field viewModel)
+        [HttpPost("CreateField")]
+        public bool CreateField([FromBody]Field viewModel)
         {
             var result = dataManager.CreateField(viewModel);
             if (result)

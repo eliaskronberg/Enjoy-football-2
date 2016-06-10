@@ -1,0 +1,192 @@
+﻿@model TournamentDetailsVM
+
+<div class="container maincontent">
+    <b style="display:none" id="playerid">@User.Identity.Name</b>
+    <b style="display:none" id="tourId">@Model.Id</b>
+    <b style="display:none" id="playeriduse">@Model.hostPlayerID</b>
+    <div class="container-fluid" >
+        <div class="col-lg-12 competitionhead">
+            <div class="col-lg-4">
+                <h2 class="orangered">@Model.Name</h2>
+            </div>
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4 hidden-xs" id="playernameinsert">
+                <h4>Tävlingen anordnas av @Model.hostPlayerID</h4>
+            </div>
+        </div>
+        <div class="col-lg-12 col-xs-12 competitiondescription">
+            <div class="innercompetition col-lg-12">
+                <div class="col-lg-8 col-xs-12 sectioner">
+                    @if (Model.Description != null)
+                    {
+                    @Model.Description
+                    }
+                    else
+                    {
+                     <p>Här ligger nu en hårdkodad beskrivning av turneringen. Den skulle kunna se ut ungefär såhär.En go turnering där 8 lag spelar single elimination. Turneringen utspelar sig under 2 veckor, vi spelar utan domare och alla matcher spelas på Mossen Ip på kvällstid.</p>
+                    }
+                </div>
+                <div class="col-lg-4 col-xs-12">
+                    <div class="col-xs-12">
+                        <div class="small underline">Join with any of your teams</div>
+                    </div>
+                    <div class="col-xs-7">
+                        <select id="selectedTeamField" class="form-control"></select>
+                    </div>
+                    <div class="col-xs-5">
+                        <input type="button" class="btn btn-success" value="Join" id="joinwithteam" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9 col-xs-12 sectioner">
+            <div class="col-xs-12">
+                <h2>Spelschema</h2>
+                @foreach (var item in Model.Matches)
+            {
+                    <div class="col-xs-12">
+                        <div class="col-xs-12">
+                            <b class="underline">Round @item.TournamentRound</b>
+                        </div>
+                        <div class="col-lg-2 col-xs-7 teamonename">
+                            @if (item.teamOne.Name != null)
+                            {
+                                <h4>@item.teamOne.Name</h4>
+                            }
+                            else
+                            {
+                                <h4>Unknown</h4>
+                            }
+                        </div>
+                        <div class="col-lg-1 hidden-xs hidden-md">
+                            <h5 class="orangered" style="text-align:center"> VS </h5>
+                        </div>
+                        <div class="col-lg-2 col-xs-7 teamtwoname">
+                            @if (item.teamTwo.Name != null)
+                            {
+                                <h4>@item.teamTwo.Name</h4>
+                            }
+                            else
+                            {
+                                <h4>Unknown</h4>
+                            }
+                        </div>
+                        <div class="col-xs-2">
+                            @if (item.isPlayed)
+                            {
+                                <h5 class="resultat">@item.Result.Split(',')[0] - @item.Result.Split(',')[1]</h5>
+                            }
+                        </div>
+                        <div class="col-xs-2">
+                            @if (item.isPlayed == false)
+                            {
+                                <input type="button" class="btn btn-info btnmanageresult" value="report" data-id="@item.Id" />
+                            }
+                            else
+                            {
+                                if (item.isTeamOneWinner)
+                                {
+                                    <h5>@item.teamOne.Name vidare</h5>
+                                }
+                                else
+                                {
+                                    <h5>@item.teamTwo.Name vidare</h5>
+                                }
+                            }
+                        </div>
+                        <div class="col-xs-2">
+                            @*Modal*@
+                            <div class="container">
+
+                                <!-- Trigger the modal with a button -->
+                                <!-- Modal -->
+                                <div class="modal fade" id="myModal" role="dialog">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Set result for this game</h4>
+                                            </div>
+                                            <div>
+                                                <div class="col-xs-6">
+                                                    <div class="col-xs-12 teamone"></div>
+                                                    <input type="text" class="teamoneresult col-xs-4 teamresult"></input>
+                                                </div>
+                                                <div class="col-xs-6" style="text-align:center">
+                                                    <div class="col-xs-12 teamtwo"></div>
+                                                    <input type="text" class="teamtworesult col-xs-4 teamresult"></input>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                <input type="button" class="btn btn-info btnmanageresult" id="submitresult" value="submit" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-12 sectioner" id="teamnamesintour">
+            <h3>Deltagande lag</h3>
+            @foreach (var item in Model.Teams)
+            {
+                <h5><a href='/team/index/@item.Id'>@item.Name</a></h5>
+            }
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        var playerName = $("#playerid").text();
+        var tourId = $("#tourId").text();
+        var playerid=$("#playeriduse").text();
+        $.get("/team/getteamsbyplayerid", { "id": playerName }, function (result) {
+            for (var i = 0 ; i < result.length; i++) {
+                var value = result[i];
+                $('#selectedTeamField').append($('<option></option>')
+                    .attr("value", result[i])
+                    .text(value));
+            }
+        });
+        $(".btnmanageresult").click(function () {
+            var id = $(this).data("id");
+            var teamonediv = $(this).closest(".teamonename");
+            var teamtwodiv = $(this).closest(".teamtwoname");
+            $.get("/tournament/tournemantmatchbyid", { "id": id }, function (result) {
+                $(".teamone").html(result.teamOne.Name);
+                $(".teamtwo").html(result.teamTwo.Name);
+                $("#myModal").modal('show');
+
+                $("#submitresult").click(function () {
+                    var match = { GoalsTeamOne: $(".teamoneresult").val(), GoalsTeamTwo: $(".teamtworesult").val(), TournamentGameId: id, TournamentId: tourId };
+                    $.post("http://localhost:23718/api/tournament/ManageMatch", { "matchresult": match });
+                    $("#myModal").modal("hide");
+                    location.reload();
+                });
+            });
+        });
+        $.get("/player/getPlayerNameById", {"id": playerid}, function(result) {
+            alert(result);
+            $("#playernameinsert").html("<h4>Tävlingen anordnas av " + result + "</h4>");
+        });
+        });
+        $("#joinwithteam").click(function () {
+            alert($("#teamnamesintour").html());
+            var selectedTeam = ($("#selectedTeamField").val());
+            var isTeamInTour = $("#teamnamesintour").html().indexOf(selectedTeam);
+            if (isTeamInTour > -1) {             
+                alert("Team is already in this tournament");
+            }
+            else {
+                $.post("http://localhost:23718/api/tournament/AddTeamToTournament", { tournamentId: $("#tourId").text(), teamName: $("#selectedTeamField").val() });
+                alert("Team added to tournament");
+                location.reload();
+            }
+        });
+</script>

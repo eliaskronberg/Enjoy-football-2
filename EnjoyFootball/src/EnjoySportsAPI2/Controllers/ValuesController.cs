@@ -13,6 +13,8 @@ namespace EnjoySportsAPI2.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            var localhost = System.Net.Dns.GetHostName();
+            //var localhost1 = System.Net.Dns.GetHostAddresses(localhost);
             return new string[] { "value1", "value2" };
         }
 

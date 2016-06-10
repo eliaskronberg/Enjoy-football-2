@@ -6,50 +6,94 @@
 }
 
 
-
-<form asp-controller="Game" asp-action="CreateGame">
-
-    <br />
-    <label asp-for="Description"></label>
-    <input asp-for="Description" class="form-control">
-    <span asp-validation-for="Description"></span>
-    <br />
-    <label asp-for="IsPublic"></label>
-    <input asp-for="IsPublic" class="form-control">
-    <span asp-validation-for="IsPublic"></span>
-    <br />
-    <label asp-for="Field"></label>
-    <select id="selectedField" asp-for="Field" class="form-control"></select>
-    <span asp-validation-for="Field"></span>
-    <br />
-    <label asp-for="MaxSlots"></label>
-    <input asp-for="MaxSlots" class="form-control">
-    <span asp-validation-for="MaxSlots"></span>
-    <br />
-    <label asp-for="StartTime"></label>
-    <input asp-for="StartTime" class="form-control">
-    <span asp-validation-for="StartTime"></span>
-    <br />
-
-    <div style="float:right">
-        <input id="submitAdmin" type="submit" class="btn btn-success" value="Logga in" />
+<div class="container maincontent">
+    <div class="col-lg-8">
+        <form asp-controller="Game" asp-action="CreateGame">
+            <br />
+            <label asp-for="Description"></label>
+            <textarea id="description" rows="2" cols="20" class="form-control" placeholder="Desribe your game in form of skillevel, kind of shoes etc"></textarea>
+            <span asp-validation-for="Description"></span>
+            <br />
+            @*<label asp-for="IsPublic"></label>
+                <input asp-for="IsPublic" class="form-control" id="IsPublic1">
+                <span asp-validation-for="IsPublic"></span>*@
+            <div>
+                <div class="col-xs-6" style="padding:0px">
+                    <label asp-for="Field"></label>
+                    <select id="selectedField" asp-for="Field" class="form-control"></select>
+                </div>
+                <div class="col-xs-6">
+                    <span asp-validation-for="Field"></span>
+                    <h5><b>Don´t find your field? Create it</b></h5>
+                    <input type="button" class="btn btn-info" value="Cretae Field" onclick="location.href='@Url.Action("createfield", "field")'" />
+                </div>
+            </div>
+            <br />
+            <label asp-for="MaxSlots"></label>
+            <input asp-for="MaxSlots" class="form-control" id="Maxslots">
+            <span asp-validation-for="MaxSlots"></span>
+            <br />
+            <label asp-for="StartTime"></label>
+            <input asp-for="StartTime" class="form-control" id="StartTime">
+            <span asp-validation-for="StartTime"></span>
+            <br />
+            <label asp-for="IsPublic"></label>
+            <input id="IsPublic" type="checkbox" />
+            <br />
+            <div style="float:right">
+                <input id="submitAdmin" type="button" class="btn btn-success" value="Skapa match" />
+            </div>
+            <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
+        </form>
     </div>
-    <div id="validation" asp-validation-summary="ValidationSummary.All"></div>
-</form>
-
+</div>
 <script>
     $(document).ready(function () {
-        alert("Hey");
+
         $.post("/Game/ListFieldName", function (result) {
-            for(var i = 0 ; i < result.length; i++)
-            {
+
+            for (var i = 0 ; i < result.length; i++) {
+
                 var value = result[i];
                 $('#selectedField').append($('<option></option>')
                     .attr("value", value)
                     .text(value));
             }
-        })
+        });
+        var curretnId;
+        $.getJSON("/game/getcurrentid", {}, function getCurrentId(result) {
+            currentId = result;
+            
+        });
 
+        $("#submitAdmin").click(function () {
+
+            var IsPublic = false;
+            if ($("#IsPublic").is(':checked')) {
+                IsPublic = true;
+            }
+            else { IsPublic = false; }
+
+            var field = $('#selectedField').val();
+            $.get("/game/GetFieldId", { "fieldName": field }, function (result) {
+                var fieldId = result;
+
+                var game = { Description: $("#description").val(), IsPublic: IsPublic, Field: fieldId, IsActive: true, Owner: currentId, MaxSlots: $("#Maxslots").val(), StartTime: $("#StartTime").val() };
+                var sendingdata = JSON.stringify(game);
+                alert(currentId);
+                $.ajax({
+                    url: 'http://localhost:23718/api/game/CreateGame',
+                    contentType: 'application/json; charset=utf-8',
+                    type: 'POST',
+                    cache: false,
+                    data: sendingdata,
+                    dataType: "json"
+                });
+            });
+
+
+
+        });
     });
 
 </script>

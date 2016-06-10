@@ -10,7 +10,7 @@ using Microsoft.AspNet.Authorization;
 
 namespace EnjoyFootball.Controllers
 {
-    [Authorize]
+    //[Authorize]
 
     public class HomeController : Controller
     {

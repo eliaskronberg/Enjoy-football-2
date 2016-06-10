@@ -1,20 +1,120 @@
 ﻿@model List<Game>
+@{
+    Layout = "_HomeLayout";
+}
+<section style="background-image:url('http://www.morgansportssolutions.ie/wp-content/uploads/2011/07/Soft-Surfaces-002.jpg'); background-size:cover; height:100vh; margin-top:-70px">
 
-<table>
-    <tr>
-        <th>Location</th>
-        <th>Open Slots</th>
-        <th>Owner</th>
-        <th>Time of match</th>
-    </tr>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td><a onclick="location.href='@Url.Action("Index", "Game" , new {id = item.Id})'" href="#">@item.Field</a></td>
-            <td>@item.MaxSlots</td>
-            <td>@item.Owner</td>
-            <td>@item.StartTime</td>
+    <div class="container-fluid">
+        <div class="col-lg-4 col-xs-12" style="text-align:left ; margin-top:12%">
+            <a href="#gameList"><h1 style="color:orangered; font-weight:600; font-size:65px; font-family:GuardianSansWeb-Bold,arail,sans-serif">Find Fun</h1></a>
+        </div>
+        <div class="col-lg-4 col-xs-12"style="margin-top:12%">
+        <a href="#" onclick="location.href='@Url.Action("creategame","game")'"><h1 style="color:orangered; font-weight:600; font-size:65px; font-family:GuardianSansWeb-Bold,arail,sans-serif">Create Fun</h1></a>
+        </div>
+        <div class="col-lg-4 hidden-xs"></div>
+    </div>
 
-        </tr>
-    }
-</table>
+</section>
+
+@if (User.Identity.IsAuthenticated)
+{
+<div class="container tableclass table-responsive maincontent">
+
+    <div class="container-fluid" style="margin-bottom:2%">
+        <div class="col-lg-6 filterSort">
+            <h3>Välj städer du vill söka matcher i</h3>
+            <ul rows="8" cols="40" id="citys" class="list-unstyled"></ul>
+        </div>
+        <div class="col-lg-3"> </div>
+        <div class="col-lg-3 filterSort"></div>
+    </div>
+    <div class="col-xs-12">
+        <div class="container-fluid">
+            <table id="gameList" class="table table-striped" data-toggle="table">
+                <thead>
+                    <tr>
+                        <th data-field="Location" data-sortable="true">Location</th>
+                        <th data-field="Open Slots" data-sortable="true">Open Slots</th>
+                        <th data-field="Owner" data-sortable="true">Owner</th>
+                        <th data-field="Time of Match" data-sortable="true">Time of match</th>
+                    </tr>
+                </thead>
+                <tbody id="ShownTr">
+                    @foreach (var item in Model)
+                            {
+                        <tr class="myClass">
+                            <td class="fieldName" id="@item.Id" data-fieldid="@item.Field"><a onclick="location.href='@Url.Action("Index", "Game", new { id = item.Id })'" href="#"></a></td>
+                            <td>@item.MaxSlots</td>
+                                <td id="owner">
+                            @foreach (var ownerNick in item.OwnerNickNames)
+                            {
+                                <p>@ownerNick</p>;
+                            }
+                                </td>
+                            <td>@item.StartTime</td>
+                        </tr>
+                            }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+}
+
+<script>
+    $(document).ready(function () {
+        $(".fieldName").each(function (index) {
+            var gameid= $(this).attr('id');
+            var fieldId = $(this).attr('data-fieldid');
+            $.post("/field/GetFieldById", { "id": fieldId }).then(function(data){      
+                $("#"+gameid).children().html("<span class='"+data.City+"'>"+data.Name+"</span>");
+            });  
+        });
+
+        $.getJSON("/Game/GetFieldCitys", function (result) {
+            $.each(result, function (index, city) {
+                $("#citys").append("<div class='col-xs-12'><input class='tagBox' type='checkbox' value='" + city + "' ng-click='includeColour(" + city + ")' id='" + city + "'</input> <label for=" + city + ">" + city + "</label> \n</div>");
+                
+            });
+
+            var listOfCitys = [];
+            $(".tagBox").change(function () {
+                $("#ingaMatcher").remove();
+                var category = $(this).val();
+
+                var hey = ($(this).prop('checked'));
+
+                if (!$(this).prop('checked')) {
+
+                    listOfCitys.splice(listOfCitys.indexOf(category), 1);
+                }
+                if ($(this).prop('checked')) {
+                    listOfCitys.push(category);
+                }
+
+
+                $(".myClass").each(function () {
+                    if (listOfCitys.length > 0) {
+                        for (var i = 0; i < listOfCitys.length; i++) {
+                            var result = this.innerHTML.indexOf(listOfCitys[i]);
+                            if (result >= 0) {
+
+                                $(this).show();
+                                break;
+                            }
+                            else $(this).hide();
+                        }
+                       
+                    }
+                    else {
+                        $(this).show();
+                    }
+
+                })
+                    if ($("tr.myClass:visible").length === 0) {
+                $("#ShownTr").append("<h3 id='ingaMatcher'>Det finns inga matcher att visa i " + listOfCitys+"<h3>");
+            }
+            });
+        });
+    });
+</script>

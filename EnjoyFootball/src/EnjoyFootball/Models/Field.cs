@@ -17,5 +17,6 @@ namespace EnjoyFootball.Models
         public string Description { get; set; }
         public double Condition { get; set; }
         public int Votes { get; set; }
+        public string City { get; set; }
     }
 }

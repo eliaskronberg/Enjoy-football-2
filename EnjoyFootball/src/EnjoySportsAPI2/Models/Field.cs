@@ -7,7 +7,7 @@ namespace EnjoyFootball.Models
 {
     public class Field
     {
-        
+        public string City { get; set; }
         public int Id { get; set; }
         public string Coordinates { get; set; }
         public string Name { get; set; }

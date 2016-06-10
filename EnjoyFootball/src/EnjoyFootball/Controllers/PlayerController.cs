@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using EnjoyFootball.ViewModels;
 using Microsoft.AspNet.Authorization;
+using Newtonsoft.Json;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,7 +26,7 @@ namespace EnjoyFootball.Controllers
             dataManager = new DataManager();
         }
         // GET: /<controller>/
-        public async Task<IActionResult> Index(string Id = "")
+        public async Task<IActionResult> Index(string Id="")
         {
             if (string.IsNullOrEmpty(Id))
             {
@@ -44,6 +45,46 @@ namespace EnjoyFootball.Controllers
                 playerinfo.currentUser = false;
             }
             return View(playerinfo);
+        }
+        public async Task<IActionResult> GetOwnerNickNames(int id)
+        {
+            
+            var game= await dataManager.getGameByID(id);
+            var playersInGame = await dataManager.PlayerByGameId(id);
+            var listOfOwnerNicknames = new List<string>();
+            foreach (var item in playersInGame)
+            {
+                foreach (var owner in game.Owner.Split(';'))
+                {
+                   var player = await dataManager.GetPlayerInfo(owner);
+                    listOfOwnerNicknames.Add(player.Nickname);
+                }
+            }
+            return Json(listOfOwnerNicknames);
+        }
+
+        public async Task<IActionResult> GetGamesByPlayerId(string id)
+        {
+           var games= await dataManager.GetGameIdsByPlayerId(id);
+            return Json(games);
+        }
+        public async Task<IActionResult> GetTeamsByPlayerId(string id)
+        {
+            var teams = await dataManager.getWebApi($"player/GetTeamsByPlayerId/{id}");
+            var result = JsonConvert.DeserializeObject<List<Team>>(teams);
+            return Json(result);
+        }
+
+        public async Task<IActionResult>getPlayerIdByName(string name)
+        {
+            var personId= Json(await dataManager.GetSingleUserId(name));
+            return RedirectToAction("index", "player", new { id = personId.Value });
+        }
+
+        public async Task<IActionResult>getPlayerNameById(string id)
+        {
+            var personName = await dataManager.GetPlayerInfo(id);
+            return Json(personName.Nickname);
         }
     }
 }

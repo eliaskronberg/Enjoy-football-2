@@ -18,6 +18,7 @@ namespace EnjoyFootball.ViewModels
         public bool IsActive { get; set; }
         public int OpenSlots { get; set; }
         public List<Player> PlayerList { get; set; }
+        public string FieldId { get; set; }
 
     }
 }

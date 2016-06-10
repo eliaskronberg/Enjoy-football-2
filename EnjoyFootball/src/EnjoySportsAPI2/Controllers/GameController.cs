@@ -6,13 +6,14 @@ using Microsoft.AspNet.Mvc;
 using EnjoyFootball.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Web.Http;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace EnjoyFootball.Controllers
 {
     [Route("api/[controller]")]
-    public class GameController : Controller
+    public class GameController : ApiController
     {
         DataManager dataManager;
         SignInManager<IdentityUser> signInManager;
@@ -41,49 +42,52 @@ namespace EnjoyFootball.Controllers
             var model = dataManager.GetAllFieldNames();
             return model;
         }
-        [HttpPost]
-        public bool CreateGame(Game createGameVm, string userId)
+        [HttpPost("CreateGame")]
+        public int CreateGame([FromBody]Game Dto)
         {
-            var gameId = dataManager.CreateGame(createGameVm, userId);
+            var gameId = dataManager.CreateGame(Dto, Dto.Owner);
             if (gameId > 0)
             {
-                dataManager.AddPlayerToGame(User.Identity.Name, gameId);
-                return true;
+                dataManager.AddPlayerToGame(Dto.Owner, gameId);
+                return gameId;
             }
             else
             {
-                return false;
+                return 0;
             }
-        }
 
+        }
+        [HttpGet("addplayer/{id}/{playerName}")]
         public void Addplayer(int id, string playerName)
         {
             dataManager.AddPlayerToGame(playerName, id);
         }
-
-        public void RemovePlayer(string UserId, int GameId)
+        [HttpGet("removeplayer/{playerIdToRemove}/{id}")]
+        public void RemovePlayer(string playerIdToRemove, int id)
         {
-            dataManager.RemovePlayerFromGame(GameId, UserId);
+            dataManager.RemovePlayerFromGame(id, playerIdToRemove);
         }
+        [HttpGet("MakeOwner/{UserId}/{GameId}")]
         public void MakeOwner(string UserId, int GameId)
         {
             dataManager.AddPlayerToOwner(GameId, UserId);
         }
-
+        [HttpGet("MakePeasant/{UserId}/{GameId}")]
         public void MakePeasant(string UserId, int GameId)
         {
             dataManager.RemoveOwner(GameId, UserId);
         }
-
-        public void UpdateGame (Game gdv)
+        [HttpPut ("updategame")]
+        public void UpdateGame ([FromBody]Game gdv)
         {
             dataManager.UpdateGame(gdv);
         }
-
+        [HttpGet("ChangePublic/{gameId}/{boolToedit}")]
         public void ChangePublic(int gameId, bool boolToEdit)
         {
             dataManager.TogglePublic(gameId, boolToEdit);
         }
+        [HttpGet("ChangeActive/{gameId}/{boolToedit}")]
         public void ChangeActive(int gameId, bool boolToEdit)
         {
             dataManager.ToggleActive(gameId, boolToEdit);
@@ -93,6 +97,16 @@ namespace EnjoyFootball.Controllers
         {
             var model = dataManager.GetFieldById(id).Name;
             return model;
+        }
+        [HttpGet("GetFieldId/{fieldName}")]
+        public int GetFieldId(string fieldName)
+        {
+            var fields = dataManager.ListFields();
+            var fieldId = fields.Where(o => o.Name == fieldName)
+                .Select(o => o.Id)
+                .SingleOrDefault();
+
+            return fieldId;
         }
     }
 }

@@ -27,17 +27,19 @@ namespace EnjoyFootball.Controllers
             this.userManager = userManager;
         }
         
-        [HttpGet("Login/{user}")]
-        public async Task<SignInResult> Login(string email,string password)
+        //ANvänds ej
+        [HttpGet("Login/{userSer}")]
+        public async Task<SignInResult> Login(string userSer)
         {
+            var email = userSer.Split(':')[0];
+            var password = userSer.Split(':')[1];
             //"{\"Id\":null,\"Email\":\"markus_vall@hotmail.com\",\"Password\":\"4Ftonbladet!\",\"NickName\":null,\"Age\":0}"
-            var Email =email;
-            //var Password = password;
-            var fan ="markus_vall@hotmail.com";
-            var helevet = "4Ftonbladet!";
+            //"{\"Email\":\"markus_vall@hotmail.com\",\"Password\":\"4Ftonbladet!\"}"
 
+
+            await context.Database.EnsureCreatedAsync();
             //var result = await signInManager.PasswordSignInAsync(Email, Password, false, false);
-            var result = await signInManager.PasswordSignInAsync(fan, helevet, false, false);
+            var result = await signInManager.PasswordSignInAsync(email, password, false, false);
             //return RedirectToAction(nameof(HomeController.Index);
             //if (!result.Succeeded)
             //{

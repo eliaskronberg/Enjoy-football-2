@@ -46,13 +46,13 @@ namespace EnjoyFootball.Controllers
                 return View(loginvm);
             }
 
-            var result = await datamanager.signInUser(loginvm);
+
             // Inbyggd metod för att sköta dekrypteringar och säkerhet, de sista två är isPersistent (loginfail !=> rensa inloggningsuppgifter) och lockOutOnFailure
-            
-            
-            //var result = await signInManager.PasswordSignInAsync(loginvm.EMail, loginvm.Password, false, false);
-            
-            
+
+            //await context.Database.EnsureCreatedAsync();
+            var result = await signInManager.PasswordSignInAsync(loginvm.EMail, loginvm.Password, false, false);
+
+
             //return RedirectToAction(nameof(HomeController.Index);
             if (!result.Succeeded)
             {
@@ -61,11 +61,15 @@ namespace EnjoyFootball.Controllers
                 return View(loginvm);
             }
 
-            
-            
             return RedirectToAction("Index", "Home");
         }
 
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("index", "home");
+        }
+        [AllowAnonymous]
         public IActionResult CreateUser()
         {
         //    CreateUserVM newUser = new CreateUserVM();

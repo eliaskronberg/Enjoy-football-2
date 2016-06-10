@@ -7,6 +7,10 @@ namespace EnjoyFootball.Models
 {
     public class Game
     {
+        public Game()
+        {
+            OwnerNickNames = new List<string>();
+        }
         public int Id { get; set; }
         public string Owner { get; set; }
         public string Description { get; set; }
@@ -15,5 +19,6 @@ namespace EnjoyFootball.Models
         public int Field { get; set; }
         public bool IsActive { get; set; }
         public int MaxSlots { get; set; }
+        public List<string> OwnerNickNames { get; set; }
     }
 }

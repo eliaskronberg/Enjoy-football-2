@@ -12,7 +12,6 @@ namespace EnjoyFootball.Models
         //public DbSet<Team> Teams { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<Player> Players { get; set; }
-        public DbSet<Game> Games { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -20,7 +19,6 @@ namespace EnjoyFootball.Models
             //modelBuilder.Entity<Team>().ToTable("Teams");
             modelBuilder.Entity<Field>().ToTable("Fields");
             modelBuilder.Entity<Player>().ToTable("Players");
-            modelBuilder.Entity<Game>().ToTable("Games");
         }
     }
 }
